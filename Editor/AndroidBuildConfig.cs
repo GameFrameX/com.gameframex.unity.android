@@ -34,7 +34,7 @@ namespace GameFrameX.Android.Editor
         /// <remarks>
         /// List of Maven repositories, injected into the root-level settings.gradle.
         /// </remarks>
-        public List<MavenRepository> mavenRepositories = new();
+        public List<MavenRepository> mavenRepositories = new List<MavenRepository>();
 
         /// <summary>
         /// Gradle Wrapper 配置，注入到 gradle-wrapper.properties。
@@ -42,7 +42,7 @@ namespace GameFrameX.Android.Editor
         /// <remarks>
         /// Gradle Wrapper config, injected into gradle-wrapper.properties.
         /// </remarks>
-        public Dictionary<string, string> gradleWrapper = new();
+        public Dictionary<string, string> gradleWrapper = new Dictionary<string, string>();
 
         /// <summary>
         /// Gradle 属性配置，注入到 gradle.properties。
@@ -50,7 +50,7 @@ namespace GameFrameX.Android.Editor
         /// <remarks>
         /// Gradle properties config, injected into gradle.properties.
         /// </remarks>
-        public Dictionary<string, string> gradleProperties = new();
+        public Dictionary<string, string> gradleProperties = new Dictionary<string, string>();
 
         /// <summary>
         /// launcher 模块配置（Android 应用壳）。
@@ -84,7 +84,7 @@ namespace GameFrameX.Android.Editor
         /// <remarks>
         /// List of Gradle dependencies.
         /// </remarks>
-        public List<GradleDependency> dependencies = new();
+        public List<GradleDependency> dependencies = new List<GradleDependency>();
 
         /// <summary>
         /// AndroidManifest 权限列表。
@@ -92,7 +92,7 @@ namespace GameFrameX.Android.Editor
         /// <remarks>
         /// List of AndroidManifest permissions.
         /// </remarks>
-        public List<string> permissions = new();
+        public List<string> permissions = new List<string>();
 
         /// <summary>
         /// AndroidManifest meta-data 列表。
@@ -100,7 +100,7 @@ namespace GameFrameX.Android.Editor
         /// <remarks>
         /// List of AndroidManifest meta-data entries.
         /// </remarks>
-        public List<ManifestMetaData> metaData = new();
+        public List<ManifestMetaData> metaData = new List<ManifestMetaData>();
 
         /// <summary>
         /// AndroidManifest application 标签上的属性列表。
@@ -108,7 +108,7 @@ namespace GameFrameX.Android.Editor
         /// <remarks>
         /// Attributes on the AndroidManifest application tag.
         /// </remarks>
-        public List<ApplicationAttribute> applicationAttributes = new();
+        public List<ApplicationAttribute> applicationAttributes = new List<ApplicationAttribute>();
 
         /// <summary>
         /// 编译 SDK 版本，注入到 android {} 块。合并时取最大值。
