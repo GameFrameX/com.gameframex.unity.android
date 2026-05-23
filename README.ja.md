@@ -54,19 +54,34 @@
   "mavenRepositories": [
     { "name": "MyRepo", "url": "https://maven.example.com/repository/" }
   ],
-  "dependencies": [
-    { "configuration": "implementation", "notation": "com.example:sdk:1.0.0" }
-  ],
-  "permissions": [
-    "android.permission.INTERNET"
-  ],
-  "metaData": [
-    { "name": "com.example.key", "value": "value" }
-  ]
+  "gradleWrapper": {
+    "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
+  },
+  "launcher": {
+    "dependencies": [
+      { "configuration": "implementation", "notation": "com.example:sdk-analytics:2.0.0" }
+    ],
+    "permissions": [ "android.permission.INTERNET" ],
+    "metaData": [
+      { "name": "com.example.APP_ID", "value": "your_app_id" }
+    ]
+  },
+  "unityLibrary": {
+    "dependencies": [
+      { "configuration": "implementation", "notation": "com.example:sdk-core:2.0.0" }
+    ],
+    "permissions": [ "android.permission.INTERNET" ],
+    "metaData": []
+  }
 }
 ```
 
 すべてのフィールドは省略可能です。複数の設定ファイルを配置でき、内容は自動的にマージ・重複排除されます。
+
+- **`launcher`**: Android アプリシェルに適用（`launcher/build.gradle`、`launcher/AndroidManifest.xml`）
+- **`unityLibrary`**: Unity エンジンライブラリに適用（`unityLibrary/build.gradle`、`unityLibrary/AndroidManifest.xml`）
+- **`mavenRepositories`**: ルートの `settings.gradle` に注入
+- **`gradleWrapper`**: キーと値のペアを `gradle-wrapper.properties` に注入
 
 ## 依存関係
 
@@ -78,4 +93,6 @@
 
 ## ライセンス
 
-本プロジェクトは MIT ライセンスの下で公開されています。詳細は [LICENSE.md](LICENSE.md) を参照してください。
+[Apache ライセンス 2.0](https://www.apache.org/licenses/LICENSE-2.0) の下で公開されています。詳細は [LICENSE.md](LICENSE.md) を参照してください。
+
+GameFrameX 組織およびその派生プロジェクトの著作権、商標、特許、その他の関連権利は、適用される法律および規則により保護されています。国家安全を脅かす、社会秩序を乱す、他人の合法的な権利を侵害するなど、法律で禁止されている活動に本プロジェクトを使用することは禁じられています。

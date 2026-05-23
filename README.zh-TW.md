@@ -54,19 +54,34 @@
   "mavenRepositories": [
     { "name": "MyRepo", "url": "https://maven.example.com/repository/" }
   ],
-  "dependencies": [
-    { "configuration": "implementation", "notation": "com.example:sdk:1.0.0" }
-  ],
-  "permissions": [
-    "android.permission.INTERNET"
-  ],
-  "metaData": [
-    { "name": "com.example.key", "value": "value" }
-  ]
+  "gradleWrapper": {
+    "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
+  },
+  "launcher": {
+    "dependencies": [
+      { "configuration": "implementation", "notation": "com.example:sdk-analytics:2.0.0" }
+    ],
+    "permissions": [ "android.permission.INTERNET" ],
+    "metaData": [
+      { "name": "com.example.APP_ID", "value": "your_app_id" }
+    ]
+  },
+  "unityLibrary": {
+    "dependencies": [
+      { "configuration": "implementation", "notation": "com.example:sdk-core:2.0.0" }
+    ],
+    "permissions": [ "android.permission.INTERNET" ],
+    "metaData": []
+  }
 }
 ```
 
 所有欄位均為可選。專案中可放置多個設定檔，內容自動合併去重。
+
+- **`launcher`**：作用於 Android 應用殼（`launcher/build.gradle`、`launcher/AndroidManifest.xml`）
+- **`unityLibrary`**：作用於 Unity 引擎庫（`unityLibrary/build.gradle`、`unityLibrary/AndroidManifest.xml`）
+- **`mavenRepositories`**：注入到根 `settings.gradle`
+- **`gradleWrapper`**：鍵值對注入到 `gradle-wrapper.properties`
 
 ## 依賴
 
@@ -78,4 +93,6 @@
 
 ## 開源協議
 
-本專案基於 MIT 協議開源，詳見 [LICENSE.md](LICENSE.md)。
+本專案基於 [Apache 協議 2.0](https://www.apache.org/licenses/LICENSE-2.0) 開源。詳見 [LICENSE.md](LICENSE.md)。
+
+GameFrameX 組織下的以及組織衍生的專案的版權、商標、專利和其他相關權利均受相應法律法規的保護。不得利用本專案從事危害國家安全、擾亂社會秩序、侵犯他人合法權益等法律法規禁止的活動！

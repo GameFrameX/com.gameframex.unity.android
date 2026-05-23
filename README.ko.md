@@ -54,19 +54,34 @@
   "mavenRepositories": [
     { "name": "MyRepo", "url": "https://maven.example.com/repository/" }
   ],
-  "dependencies": [
-    { "configuration": "implementation", "notation": "com.example:sdk:1.0.0" }
-  ],
-  "permissions": [
-    "android.permission.INTERNET"
-  ],
-  "metaData": [
-    { "name": "com.example.key", "value": "value" }
-  ]
+  "gradleWrapper": {
+    "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
+  },
+  "launcher": {
+    "dependencies": [
+      { "configuration": "implementation", "notation": "com.example:sdk-analytics:2.0.0" }
+    ],
+    "permissions": [ "android.permission.INTERNET" ],
+    "metaData": [
+      { "name": "com.example.APP_ID", "value": "your_app_id" }
+    ]
+  },
+  "unityLibrary": {
+    "dependencies": [
+      { "configuration": "implementation", "notation": "com.example:sdk-core:2.0.0" }
+    ],
+    "permissions": [ "android.permission.INTERNET" ],
+    "metaData": []
+  }
 }
 ```
 
 모든 필드는 선택 사항입니다. 여러 설정 파일을 배치할 수 있으며, 내용은 자동으로 병합 및 중복 제거됩니다.
+
+- **`launcher`**: Android 앱 셸에 적용 (`launcher/build.gradle`, `launcher/AndroidManifest.xml`)
+- **`unityLibrary`**: Unity 엔진 라이브러리에 적용 (`unityLibrary/build.gradle`, `unityLibrary/AndroidManifest.xml`)
+- **`mavenRepositories`**: 루트 `settings.gradle`에 주입
+- **`gradleWrapper`**: 키-값 쌍을 `gradle-wrapper.properties`에 주입
 
 ## 종속성
 
@@ -78,4 +93,6 @@
 
 ## 라이선스
 
-본 프로젝트는 MIT 라이선스에 따라 배포됩니다. 자세한 내용은 [LICENSE.md](LICENSE.md)를 참조하세요.
+[Apache 라이선스 2.0](https://www.apache.org/licenses/LICENSE-2.0)에 따라 배포됩니다. 자세한 내용은 [LICENSE.md](LICENSE.md)를 참조하세요.
+
+GameFrameX 조직 및 그 파생 프로젝트의 저작권, 상표, 특허 및 기타 관련 권리는 관련 법률 및 규정에 의해 보호됩니다. 국가 안전을 위협하거나 사회 질서를 문란하게 하거나 타인의 합법적인 권리를 침해하는 등 법률로 금지된 활동에 본 프로젝트를 사용해서는 안 됩니다.

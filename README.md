@@ -54,19 +54,34 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
   "mavenRepositories": [
     { "name": "MyRepo", "url": "https://maven.example.com/repository/" }
   ],
-  "dependencies": [
-    { "configuration": "implementation", "notation": "com.example:sdk:1.0.0" }
-  ],
-  "permissions": [
-    "android.permission.INTERNET"
-  ],
-  "metaData": [
-    { "name": "com.example.key", "value": "value" }
-  ]
+  "gradleWrapper": {
+    "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
+  },
+  "launcher": {
+    "dependencies": [
+      { "configuration": "implementation", "notation": "com.example:sdk-analytics:2.0.0" }
+    ],
+    "permissions": [ "android.permission.INTERNET" ],
+    "metaData": [
+      { "name": "com.example.APP_ID", "value": "your_app_id" }
+    ]
+  },
+  "unityLibrary": {
+    "dependencies": [
+      { "configuration": "implementation", "notation": "com.example:sdk-core:2.0.0" }
+    ],
+    "permissions": [ "android.permission.INTERNET" ],
+    "metaData": []
+  }
 }
 ```
 
 All fields are optional. You can place multiple config files — contents are automatically merged and deduplicated.
+
+- **`launcher`**: Targets the Android app shell (`launcher/build.gradle`, `launcher/AndroidManifest.xml`)
+- **`unityLibrary`**: Targets the Unity engine library (`unityLibrary/build.gradle`, `unityLibrary/AndroidManifest.xml`)
+- **`mavenRepositories`**: Injected into root `settings.gradle`
+- **`gradleWrapper`**: Key-value pairs injected into `gradle-wrapper.properties`
 
 ## Dependencies
 
@@ -78,4 +93,4 @@ See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE.md](LICENSE.md) for details.
+Licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). See [LICENSE.md](LICENSE.md) for details.
