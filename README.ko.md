@@ -70,7 +70,13 @@
     "permissions": [ "android.permission.INTERNET" ],
     "metaData": [
       { "name": "com.example.APP_ID", "value": "your_app_id" }
-    ]
+    ],
+    "signingConfig": {
+      "storeFile": "keystore/release.jks",
+      "storePassword": "your_store_password",
+      "keyAlias": "release",
+      "keyPassword": "your_key_password"
+    }
   },
   "unityLibrary": {
     "compileSdkVersion": "34",
@@ -101,6 +107,7 @@
 - **SDK 버전** (`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`): 병합 시 모든 설정에서 최대 숫자값을 채택 (`buildToolsVersion`은 마지막 작성자 우선)
 - **`applicationId`**: 앱 식별자, `defaultConfig {}`에 주입, 병합은 마지막 작성자 우선
 - **`versionName`**: 버전 이름, `defaultConfig {}`에 주입, 병합은 마지막 작성자 우선
+- **`signingConfig`**: 서명 설정 (storeFile/storePassword/keyAlias/keyPassword), `signingConfigs {}` 및 `buildTypes.release {}`에 주입. storeFile은 상대 경로 및 절대 경로 지원
 - **`fileCopies`**: 키-값 매핑 (소스 경로 → 대상 경로), Gradle 프로젝트에 파일 복사. 상대 경로 및 절대 경로 지원
 - **`directoryCopies`**: 키-값 매핑 (소스 경로 → 대상 경로), Gradle 프로젝트에 디렉토리 복사. 상대 경로 및 절대 경로 지원
 

@@ -70,7 +70,13 @@
     "permissions": [ "android.permission.INTERNET" ],
     "metaData": [
       { "name": "com.example.APP_ID", "value": "your_app_id" }
-    ]
+    ],
+    "signingConfig": {
+      "storeFile": "keystore/release.jks",
+      "storePassword": "your_store_password",
+      "keyAlias": "release",
+      "keyPassword": "your_key_password"
+    }
   },
   "unityLibrary": {
     "compileSdkVersion": "34",
@@ -101,6 +107,7 @@
 - **SDK バージョン**（`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`）: マージ時に全設定中の最大数値を採用（`buildToolsVersion` は後勝ち）
 - **`applicationId`**: アプリケーション識別子、`defaultConfig {}` に注入、マージは後勝ち
 - **`versionName`**: バージョン名、`defaultConfig {}` に注入、マージは後勝ち
+- **`signingConfig`**: 署名設定（storeFile/storePassword/keyAlias/keyPassword）、`signingConfigs {}` と `buildTypes.release {}` に注入。storeFile は相対パスと絶対パスに対応
 - **`fileCopies`**: キーと値のマッピング（ソースパス → コピー先パス）、Gradle プロジェクトにファイルをコピー。相対パスと絶対パスに対応
 - **`directoryCopies`**: キーと値のマッピング（ソースパス → コピー先パス）、Gradle プロジェクトにディレクトリをコピー。相対パスと絶対パスに対応
 

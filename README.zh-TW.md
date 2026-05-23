@@ -70,7 +70,13 @@
     "permissions": [ "android.permission.INTERNET" ],
     "metaData": [
       { "name": "com.example.APP_ID", "value": "your_app_id" }
-    ]
+    ],
+    "signingConfig": {
+      "storeFile": "keystore/release.jks",
+      "storePassword": "your_store_password",
+      "keyAlias": "release",
+      "keyPassword": "your_key_password"
+    }
   },
   "unityLibrary": {
     "compileSdkVersion": "34",
@@ -101,6 +107,7 @@
 - **SDK 版本**（`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`）：合併時取所有設定中的最大數值（`buildToolsVersion` 為後寫覆蓋）
 - **`applicationId`**：應用標識符，注入到 `defaultConfig {}`，合併策略為後寫覆蓋
 - **`versionName`**：版本名稱，注入到 `defaultConfig {}`，合併策略為後寫覆蓋
+- **`signingConfig`**：簽名配置（storeFile/storePassword/keyAlias/keyPassword），注入到 `signingConfigs {}` 和 `buildTypes.release {}`。storeFile 支援相對路徑和絕對路徑
 - **`fileCopies`**：鍵值對映射（源路徑 → 目標路徑），用於複製檔案到 Gradle 專案。支援相對路徑和絕對路徑
 - **`directoryCopies`**：鍵值對映射（源路徑 → 目標路徑），用於複製目錄到 Gradle 專案。支援相對路徑和絕對路徑
 

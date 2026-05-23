@@ -70,7 +70,13 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
     "permissions": [ "android.permission.INTERNET" ],
     "metaData": [
       { "name": "com.example.APP_ID", "value": "your_app_id" }
-    ]
+    ],
+    "signingConfig": {
+      "storeFile": "keystore/release.jks",
+      "storePassword": "your_store_password",
+      "keyAlias": "release",
+      "keyPassword": "your_key_password"
+    }
   },
   "unityLibrary": {
     "compileSdkVersion": "34",
@@ -101,6 +107,7 @@ All fields are optional. You can place multiple config files — contents are au
 - **SDK versions** (`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`): Merged by taking the maximum numeric value across all configs (except `buildToolsVersion` which uses last-writer-wins)
 - **`applicationId`**: Application identifier injected into `defaultConfig {}`, merged by last-writer-wins
 - **`versionName`**: Version name string injected into `defaultConfig {}`, merged by last-writer-wins
+- **`signingConfig`**: Signing configuration (storeFile/storePassword/keyAlias/keyPassword), injected into `signingConfigs {}` and `buildTypes.release {}`. storeFile supports relative and absolute paths
 - **`fileCopies`**: Key-value map (source → destination) for copying files into the Gradle project. Supports relative and absolute paths
 - **`directoryCopies`**: Key-value map (source → destination) for copying directories into the Gradle project. Supports relative and absolute paths
 
