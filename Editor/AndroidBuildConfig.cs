@@ -45,6 +45,14 @@ namespace GameFrameX.Android.Editor
         public Dictionary<string, string> gradleWrapper = new();
 
         /// <summary>
+        /// Gradle 属性配置，注入到 gradle.properties。
+        /// </summary>
+        /// <remarks>
+        /// Gradle properties config, injected into gradle.properties.
+        /// </remarks>
+        public Dictionary<string, string> gradleProperties = new();
+
+        /// <summary>
         /// launcher 模块配置（Android 应用壳）。
         /// </summary>
         /// <remarks>

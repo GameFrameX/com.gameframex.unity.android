@@ -2,8 +2,7 @@
   "name": "GameFrameX.Android.Editor",
   "rootNamespace": "GameFrameX.Android.Editor",
   "references": [
-    "GameFrameX.Editor",
-    "GameFrameX.Runtime"
+    "GameFrameX.Editor"
   ],
   "includePlatforms": [
     "Editor"

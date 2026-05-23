@@ -66,6 +66,7 @@ namespace GameFrameX.Android.Editor
                 LogHelper.Log("Configuration summary:");
                 LogHelper.Log("  Maven repositories: " + config.mavenRepositories.Count);
                 LogHelper.Log("  Gradle wrapper: " + config.gradleWrapper.Count + " prop(s)");
+                LogHelper.Log("  Gradle properties: " + config.gradleProperties.Count + " prop(s)");
 
                 if (config.launcher != null)
                 {

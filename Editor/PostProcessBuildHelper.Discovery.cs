@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using GameFrameX.Runtime;
 using UnityEngine;
 
 namespace GameFrameX.Android.Editor
@@ -79,6 +78,7 @@ namespace GameFrameX.Android.Editor
 
                 MergeRepositories(merged, config, seenRepoUrls);
                 MergeGradleWrapper(merged, config);
+                MergeGradleProperties(merged, config);
                 MergeModule(merged.launcher, config.launcher, launcherDeps, launcherPerms, launcherMeta);
                 MergeModule(merged.unityLibrary, config.unityLibrary, libDeps, libPerms, libMeta);
             }
@@ -106,13 +106,105 @@ namespace GameFrameX.Android.Editor
             try
             {
                 var json = File.ReadAllText(filePath);
-                return Utility.Json.ToObject<AndroidBuildConfigFile>(json);
+                var decoded = MiniJSON.JsonDecode(json) as System.Collections.Hashtable;
+                if (decoded == null)
+                {
+                    LogHelper.Error("Failed to parse JSON from " + filePath);
+                    return null;
+                }
+
+                var config = new AndroidBuildConfigFile();
+                config.providerName = decoded["providerName"] as string;
+
+                if (decoded["mavenRepositories"] is System.Collections.ArrayList repos)
+                {
+                    foreach (System.Collections.Hashtable repo in repos)
+                    {
+                        config.mavenRepositories.Add(new MavenRepository
+                        {
+                            name = repo["name"] as string,
+                            url = repo["url"] as string,
+                        });
+                    }
+                }
+
+                if (decoded["gradleWrapper"] is System.Collections.Hashtable wrapper)
+                {
+                    foreach (System.Collections.DictionaryEntry kvp in wrapper)
+                    {
+                        config.gradleWrapper[kvp.Key as string] = kvp.Value as string;
+                    }
+                }
+
+                if (decoded["gradleProperties"] is System.Collections.Hashtable props)
+                {
+                    foreach (System.Collections.DictionaryEntry kvp in props)
+                    {
+                        config.gradleProperties[kvp.Key as string] = kvp.Value as string;
+                    }
+                }
+
+                if (decoded["launcher"] is System.Collections.Hashtable launcherObj)
+                {
+                    config.launcher = ParseModule(launcherObj);
+                }
+
+                if (decoded["unityLibrary"] is System.Collections.Hashtable unityLibObj)
+                {
+                    config.unityLibrary = ParseModule(unityLibObj);
+                }
+
+                return config;
             }
             catch (System.Exception ex)
             {
                 LogHelper.Error("Failed to load " + filePath + ": " + ex.Message);
                 return null;
             }
+        }
+
+        private static AndroidBuildConfigModule ParseModule(System.Collections.Hashtable table)
+        {
+            var module = new AndroidBuildConfigModule();
+
+            module.compileSdkVersion = table["compileSdkVersion"] as string;
+            module.buildToolsVersion = table["buildToolsVersion"] as string;
+            module.minSdkVersion = table["minSdkVersion"] as string;
+            module.targetSdkVersion = table["targetSdkVersion"] as string;
+
+            if (table["dependencies"] is System.Collections.ArrayList deps)
+            {
+                foreach (System.Collections.Hashtable dep in deps)
+                {
+                    module.dependencies.Add(new GradleDependency
+                    {
+                        configuration = dep["configuration"] as string,
+                        notation = dep["notation"] as string,
+                    });
+                }
+            }
+
+            if (table["permissions"] is System.Collections.ArrayList perms)
+            {
+                foreach (string perm in perms)
+                {
+                    module.permissions.Add(perm);
+                }
+            }
+
+            if (table["metaData"] is System.Collections.ArrayList metas)
+            {
+                foreach (System.Collections.Hashtable meta in metas)
+                {
+                    module.metaData.Add(new ManifestMetaData
+                    {
+                        name = meta["name"] as string,
+                        value = meta["value"] as string,
+                    });
+                }
+            }
+
+            return module;
         }
 
         private static void MergeRepositories(AndroidBuildConfigFile merged, AndroidBuildConfigFile source, HashSet<string> seen)
@@ -143,6 +235,19 @@ namespace GameFrameX.Android.Editor
             foreach (var kvp in source.gradleWrapper)
             {
                 merged.gradleWrapper[kvp.Key] = kvp.Value;
+            }
+        }
+
+        private static void MergeGradleProperties(AndroidBuildConfigFile merged, AndroidBuildConfigFile source)
+        {
+            if (source.gradleProperties == null)
+            {
+                return;
+            }
+
+            foreach (var kvp in source.gradleProperties)
+            {
+                merged.gradleProperties[kvp.Key] = kvp.Value;
             }
         }
 
@@ -268,7 +373,8 @@ namespace GameFrameX.Android.Editor
         {
             LogHelper.Log("Merged result: " +
                           merged.mavenRepositories.Count + " repo(s), " +
-                          merged.gradleWrapper.Count + " gradle-wrapper prop(s)");
+                          merged.gradleWrapper.Count + " gradle-wrapper prop(s), " +
+                          merged.gradleProperties.Count + " gradle prop(s)");
 
             if (merged.launcher != null)
             {
