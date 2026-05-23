@@ -58,6 +58,10 @@
     "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
   },
   "launcher": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
     "dependencies": [
       { "configuration": "implementation", "notation": "com.example:sdk-analytics:2.0.0" }
     ],
@@ -67,6 +71,10 @@
     ]
   },
   "unityLibrary": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
     "dependencies": [
       { "configuration": "implementation", "notation": "com.example:sdk-core:2.0.0" }
     ],
@@ -82,6 +90,7 @@
 - **`unityLibrary`**：作用于 Unity 引擎库（`unityLibrary/build.gradle`、`unityLibrary/AndroidManifest.xml`）
 - **`mavenRepositories`**：注入到根 `settings.gradle`
 - **`gradleWrapper`**：键值对注入到 `gradle-wrapper.properties`
+- **SDK 版本**（`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`）：合并时取所有配置中的最大数值（`buildToolsVersion` 为后写覆盖）
 
 ## 依赖
 

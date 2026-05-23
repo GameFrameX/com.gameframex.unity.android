@@ -58,6 +58,10 @@
     "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
   },
   "launcher": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
     "dependencies": [
       { "configuration": "implementation", "notation": "com.example:sdk-analytics:2.0.0" }
     ],
@@ -67,6 +71,10 @@
     ]
   },
   "unityLibrary": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
     "dependencies": [
       { "configuration": "implementation", "notation": "com.example:sdk-core:2.0.0" }
     ],
@@ -82,6 +90,7 @@
 - **`unityLibrary`**: Unity 엔진 라이브러리에 적용 (`unityLibrary/build.gradle`, `unityLibrary/AndroidManifest.xml`)
 - **`mavenRepositories`**: 루트 `settings.gradle`에 주입
 - **`gradleWrapper`**: 키-값 쌍을 `gradle-wrapper.properties`에 주입
+- **SDK 버전** (`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`): 병합 시 모든 설정에서 최대 숫자값을 채택 (`buildToolsVersion`은 마지막 작성자 우선)
 
 ## 종속성
 

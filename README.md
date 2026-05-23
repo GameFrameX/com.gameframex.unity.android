@@ -58,6 +58,10 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
     "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
   },
   "launcher": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
     "dependencies": [
       { "configuration": "implementation", "notation": "com.example:sdk-analytics:2.0.0" }
     ],
@@ -67,6 +71,10 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
     ]
   },
   "unityLibrary": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
     "dependencies": [
       { "configuration": "implementation", "notation": "com.example:sdk-core:2.0.0" }
     ],
@@ -82,6 +90,7 @@ All fields are optional. You can place multiple config files — contents are au
 - **`unityLibrary`**: Targets the Unity engine library (`unityLibrary/build.gradle`, `unityLibrary/AndroidManifest.xml`)
 - **`mavenRepositories`**: Injected into root `settings.gradle`
 - **`gradleWrapper`**: Key-value pairs injected into `gradle-wrapper.properties`
+- **SDK versions** (`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`): Merged by taking the maximum numeric value across all configs (except `buildToolsVersion` which uses last-writer-wins)
 
 ## Dependencies
 

@@ -10,6 +10,10 @@
     "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
   },
   "launcher": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
     "dependencies": [
       {
         "configuration": "implementation",
@@ -28,6 +32,10 @@
     ]
   },
   "unityLibrary": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
     "dependencies": [
       {
         "configuration": "implementation",

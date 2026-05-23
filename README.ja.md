@@ -58,6 +58,10 @@
     "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
   },
   "launcher": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
     "dependencies": [
       { "configuration": "implementation", "notation": "com.example:sdk-analytics:2.0.0" }
     ],
@@ -67,6 +71,10 @@
     ]
   },
   "unityLibrary": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
     "dependencies": [
       { "configuration": "implementation", "notation": "com.example:sdk-core:2.0.0" }
     ],
@@ -82,6 +90,7 @@
 - **`unityLibrary`**: Unity エンジンライブラリに適用（`unityLibrary/build.gradle`、`unityLibrary/AndroidManifest.xml`）
 - **`mavenRepositories`**: ルートの `settings.gradle` に注入
 - **`gradleWrapper`**: キーと値のペアを `gradle-wrapper.properties` に注入
+- **SDK バージョン**（`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`）: マージ時に全設定中の最大数値を採用（`buildToolsVersion` は後勝ち）
 
 ## 依存関係
 
