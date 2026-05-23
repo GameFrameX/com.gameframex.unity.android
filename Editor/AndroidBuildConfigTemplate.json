@@ -1,0 +1,34 @@
+{
+  "providerName": "Your SDK Name",
+  "mavenRepositories": [
+    {
+      "name": "Your Maven Repo Name",
+      "url": "https://your-maven-repo.example.com/"
+    }
+  ],
+  "gradleWrapper": {
+    "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
+  },
+  "launcher": {
+    "dependencies": [
+      {
+        "configuration": "implementation",
+        "notation": "com.example:sdk:1.0.0"
+      }
+    ],
+    "permissions": [
+      "android.permission.INTERNET"
+    ],
+    "metaData": [
+      {
+        "name": "com.example.key",
+        "value": "your_value"
+      }
+    ]
+  },
+  "unityLibrary": {
+    "dependencies": [],
+    "permissions": [],
+    "metaData": []
+  }
+}

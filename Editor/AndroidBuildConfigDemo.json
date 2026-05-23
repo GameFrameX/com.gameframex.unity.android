@@ -1,0 +1,42 @@
+{
+  "providerName": "Demo SDK",
+  "mavenRepositories": [
+    {
+      "name": "DemoMavenRepo",
+      "url": "https://maven.example.com/repository/maven-releases/"
+    }
+  ],
+  "gradleWrapper": {
+    "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
+  },
+  "launcher": {
+    "dependencies": [
+      {
+        "configuration": "implementation",
+        "notation": "com.example:sdk-analytics:2.0.0"
+      }
+    ],
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_NETWORK_STATE"
+    ],
+    "metaData": [
+      {
+        "name": "com.example.analytics.APP_ID",
+        "value": "your_app_id"
+      }
+    ]
+  },
+  "unityLibrary": {
+    "dependencies": [
+      {
+        "configuration": "implementation",
+        "notation": "com.example:sdk-core:2.0.0"
+      }
+    ],
+    "permissions": [
+      "android.permission.INTERNET"
+    ],
+    "metaData": []
+  }
+}
