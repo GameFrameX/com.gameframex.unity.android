@@ -1,0 +1,81 @@
+<div align="center">
+
+  <img src="https://download.alianblank.com/gameframex/gameframex_logo_320.png" alt="GameFrameX Logo" width="160" />
+
+  # Game Frame X Android
+
+  [![Version](https://img.shields.io/github/v/release/GameFrameX/com.gameframex.unity.android?label=version)](https://github.com/GameFrameX/com.gameframex.unity.android/releases)
+  [![License](https://img.shields.io/github/license/GameFrameX/com.gameframex.unity.android?label=license)](https://github.com/GameFrameX/com.gameframex.unity.android/blob/main/LICENSE.md)
+  [![Documentation](https://img.shields.io/badge/documentation-docs-blue)](https://gameframex.doc.alianblank.com)
+
+  独立游戏前后端一体化解决方案 · 独立游戏开发者的圆梦大使
+
+  [文档](https://gameframex.doc.alianblank.com) · [快速开始](#快速开始)
+
+  [English](README.md) | **简体中文** | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
+
+</div>
+
+---
+
+## 项目简介
+
+通用的 Android 构建自动配置系统。通过 JSON 数据文件驱动，自动发现项目中所有 `AndroidBuildConfig.json` 并在构建时注入 Maven 仓库、Gradle 依赖、AndroidManifest 配置。
+
+核心特性：
+
+- **纯数据驱动**：SDK 包只需 JSON 文件，无需 C# 代码
+- **多文件支持**：项目中可存在任意数量的配置文件
+- **任意位置**：配置文件可放在 Unity 能识别的任何位置
+- **自动合并去重**：多个配置文件按 key 自动合并去重
+- **幂等操作**：多次构建安全，已有条目自动跳过
+
+## 快速开始
+
+### 安装
+
+在项目的 `Packages/manifest.json` 中添加依赖：
+
+```json
+{
+  "dependencies": {
+    "com.gameframex.unity.android": "https://github.com/gameframex/com.gameframex.unity.android.git"
+  }
+}
+```
+
+### 使用示例
+
+在项目的任意位置放置 `AndroidBuildConfig.json` 文件（如 `Assets/`、`Packages/` 下的任何目录）：
+
+```json
+{
+  "providerName": "My SDK",
+  "mavenRepositories": [
+    { "name": "MyRepo", "url": "https://maven.example.com/repository/" }
+  ],
+  "dependencies": [
+    { "configuration": "implementation", "notation": "com.example:sdk:1.0.0" }
+  ],
+  "permissions": [
+    "android.permission.INTERNET"
+  ],
+  "metaData": [
+    { "name": "com.example.key", "value": "value" }
+  ]
+}
+```
+
+所有字段均为可选。项目中可放置多个配置文件，内容自动合并去重。
+
+## 依赖
+
+- `com.gameframex.unity >= 1.1.1`
+
+## 更新日志
+
+详见 [CHANGELOG.md](CHANGELOG.md)。
+
+## 开源协议
+
+本项目基于 MIT 协议开源，详见 [LICENSE.md](LICENSE.md)。
