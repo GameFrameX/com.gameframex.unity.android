@@ -1,0 +1,19 @@
+{
+  "name": "GameFrameX.Android.Editor",
+  "rootNamespace": "GameFrameX.Android.Editor",
+  "references": [
+    "GameFrameX.Editor",
+    "GameFrameX.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
