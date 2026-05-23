@@ -67,13 +67,25 @@ namespace GameFrameX.Android.Editor
 
             LogHelper.Log("Gradle root: " + gradleRoot);
 
-            SetSettingsGradle(gradleRoot, config);
-            SetAndroidBlock(gradleRoot, config);
-            SetBuildGradle(gradleRoot, config);
-            SetManifest(gradleRoot, config);
-            SetGradleWrapper(gradleRoot, config);
-            SetGradleProperties(gradleRoot, config);
-            CopyFiles(gradleRoot, config);
+            SafeRun("SetSettingsGradle", () => SetSettingsGradle(gradleRoot, config));
+            SafeRun("SetAndroidBlock", () => SetAndroidBlock(gradleRoot, config));
+            SafeRun("SetBuildGradle", () => SetBuildGradle(gradleRoot, config));
+            SafeRun("SetManifest", () => SetManifest(gradleRoot, config));
+            SafeRun("SetGradleWrapper", () => SetGradleWrapper(gradleRoot, config));
+            SafeRun("SetGradleProperties", () => SetGradleProperties(gradleRoot, config));
+            SafeRun("CopyFiles", () => CopyFiles(gradleRoot, config));
+        }
+
+        private static void SafeRun(string stepName, System.Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (System.Exception e)
+            {
+                LogHelper.Error(stepName + " failed: " + e.Message);
+            }
         }
 
         /// <summary>
