@@ -31,7 +31,7 @@ namespace GameFrameX.Android.Editor
 
                     if (!File.Exists(source))
                     {
-                        LogHelper.Warning("File copy source not found or not a file: " + source);
+                        LogHelper.Error("File copy source not found or not a file: " + source);
                         continue;
                     }
 
@@ -55,7 +55,7 @@ namespace GameFrameX.Android.Editor
 
                     if (!Directory.Exists(source))
                     {
-                        LogHelper.Warning("Directory copy source not found or not a directory: " + source);
+                        LogHelper.Error("Directory copy source not found or not a directory: " + source);
                         continue;
                     }
 
