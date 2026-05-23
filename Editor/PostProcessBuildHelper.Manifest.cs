@@ -23,7 +23,7 @@ namespace GameFrameX.Android.Editor
         /// <param name="config">合并后的配置 / Merged config</param>
         private static void SetManifest(string gradleRoot, AndroidBuildConfigFile config)
         {
-            if (config.launcher != null && (config.launcher.permissions.Count > 0 || config.launcher.metaData.Count > 0))
+            if (config.launcher != null && (config.launcher.permissions.Count > 0 || config.launcher.metaData.Count > 0 || config.launcher.applicationAttributes.Count > 0))
             {
                 var manifestPath = FindFile(gradleRoot, Path.Combine("launcher", "src", "main", "AndroidManifest.xml"));
                 if (!string.IsNullOrEmpty(manifestPath))
@@ -36,7 +36,7 @@ namespace GameFrameX.Android.Editor
                 }
             }
 
-            if (config.unityLibrary != null && (config.unityLibrary.permissions.Count > 0 || config.unityLibrary.metaData.Count > 0))
+            if (config.unityLibrary != null && (config.unityLibrary.permissions.Count > 0 || config.unityLibrary.metaData.Count > 0 || config.unityLibrary.applicationAttributes.Count > 0))
             {
                 var manifestPath = FindFile(gradleRoot, Path.Combine("unityLibrary", "src", "main", "AndroidManifest.xml"));
                 if (!string.IsNullOrEmpty(manifestPath))
@@ -125,6 +125,35 @@ namespace GameFrameX.Android.Editor
                         appNode.AppendChild(elem);
                         changed = true;
                         LogHelper.Log("+ AndroidManifest: meta-data " + meta.name + "=" + meta.value);
+                    }
+                }
+            }
+
+            if (module.applicationAttributes.Count > 0)
+            {
+                var appNode = doc.SelectSingleNode("//application") as XmlElement;
+                if (appNode != null)
+                {
+                    foreach (var attr in module.applicationAttributes)
+                    {
+                        if (string.IsNullOrEmpty(attr.name))
+                        {
+                            continue;
+                        }
+
+                        var existingAttr = appNode.GetAttribute(attr.name, "http://schemas.android.com/apk/res/android");
+                        if (!string.IsNullOrEmpty(existingAttr))
+                        {
+                            appNode.SetAttribute(attr.name, "http://schemas.android.com/apk/res/android", attr.value);
+                            changed = true;
+                            LogHelper.Log("~ AndroidManifest: application@" + attr.name + "=" + attr.value);
+                        }
+                        else
+                        {
+                            appNode.SetAttribute(attr.name, "http://schemas.android.com/apk/res/android", attr.value);
+                            changed = true;
+                            LogHelper.Log("+ AndroidManifest: application@" + attr.name + "=" + attr.value);
+                        }
                     }
                 }
             }

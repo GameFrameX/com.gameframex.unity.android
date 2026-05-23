@@ -61,9 +61,11 @@ namespace GameFrameX.Android.Editor
             var launcherDeps = new HashSet<string>();
             var launcherPerms = new HashSet<string>();
             var launcherMeta = new HashSet<string>();
+            var launcherAppAttrs = new HashSet<string>();
             var libDeps = new HashSet<string>();
             var libPerms = new HashSet<string>();
             var libMeta = new HashSet<string>();
+            var libAppAttrs = new HashSet<string>();
 
             foreach (var filePath in files)
             {
@@ -79,8 +81,8 @@ namespace GameFrameX.Android.Editor
                 MergeRepositories(merged, config, seenRepoUrls);
                 MergeGradleWrapper(merged, config);
                 MergeGradleProperties(merged, config);
-                MergeModule(merged.launcher, config.launcher, launcherDeps, launcherPerms, launcherMeta);
-                MergeModule(merged.unityLibrary, config.unityLibrary, libDeps, libPerms, libMeta);
+                MergeModule(merged.launcher, config.launcher, launcherDeps, launcherPerms, launcherMeta, launcherAppAttrs);
+                MergeModule(merged.unityLibrary, config.unityLibrary, libDeps, libPerms, libMeta, libAppAttrs);
             }
 
             LogMergedSummary(merged);
@@ -88,7 +90,7 @@ namespace GameFrameX.Android.Editor
         }
 
         private static void MergeModule(AndroidBuildConfigModule target, AndroidBuildConfigModule source,
-            HashSet<string> seenDeps, HashSet<string> seenPerms, HashSet<string> seenMeta)
+            HashSet<string> seenDeps, HashSet<string> seenPerms, HashSet<string> seenMeta, HashSet<string> seenAppAttrs)
         {
             if (source == null)
             {
@@ -98,6 +100,7 @@ namespace GameFrameX.Android.Editor
             MergeDependencies(target, source, seenDeps);
             MergePermissions(target, source, seenPerms);
             MergeMetaData(target, source, seenMeta);
+            MergeApplicationAttributes(target, source, seenAppAttrs);
             MergeSdkVersions(target, source);
         }
 
@@ -204,6 +207,18 @@ namespace GameFrameX.Android.Editor
                 }
             }
 
+            if (table["applicationAttributes"] is System.Collections.ArrayList appAttrs)
+            {
+                foreach (System.Collections.Hashtable attr in appAttrs)
+                {
+                    module.applicationAttributes.Add(new ApplicationAttribute
+                    {
+                        name = attr["name"] as string,
+                        value = attr["value"] as string,
+                    });
+                }
+            }
+
             return module;
         }
 
@@ -303,6 +318,24 @@ namespace GameFrameX.Android.Editor
                 }
 
                 target.metaData.Add(meta);
+            }
+        }
+
+        private static void MergeApplicationAttributes(AndroidBuildConfigModule target, AndroidBuildConfigModule source, HashSet<string> seen)
+        {
+            if (source.applicationAttributes == null)
+            {
+                return;
+            }
+
+            foreach (var attr in source.applicationAttributes)
+            {
+                if (string.IsNullOrEmpty(attr.name) || !seen.Add(attr.name))
+                {
+                    continue;
+                }
+
+                target.applicationAttributes.Add(attr);
             }
         }
 

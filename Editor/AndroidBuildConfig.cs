@@ -103,6 +103,14 @@ namespace GameFrameX.Android.Editor
         public List<ManifestMetaData> metaData = new();
 
         /// <summary>
+        /// AndroidManifest application 标签上的属性列表。
+        /// </summary>
+        /// <remarks>
+        /// Attributes on the AndroidManifest application tag.
+        /// </remarks>
+        public List<ApplicationAttribute> applicationAttributes = new();
+
+        /// <summary>
         /// 编译 SDK 版本，注入到 android {} 块。合并时取最大值。
         /// </summary>
         /// <remarks>
@@ -209,6 +217,32 @@ namespace GameFrameX.Android.Editor
         /// </summary>
         /// <remarks>
         /// The value attribute of the meta-data.
+        /// </remarks>
+        public string value;
+    }
+
+    /// <summary>
+    /// AndroidManifest application 标签上的属性。
+    /// </summary>
+    /// <remarks>
+    /// Attribute on the AndroidManifest application tag.
+    /// </remarks>
+    [Serializable]
+    internal class ApplicationAttribute
+    {
+        /// <summary>
+        /// 属性名（不含 android: 前缀）。
+        /// </summary>
+        /// <remarks>
+        /// Attribute name (without android: prefix).
+        /// </remarks>
+        public string name;
+
+        /// <summary>
+        /// 属性值。
+        /// </summary>
+        /// <remarks>
+        /// Attribute value.
         /// </remarks>
         public string value;
     }
