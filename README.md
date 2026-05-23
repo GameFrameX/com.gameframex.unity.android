@@ -80,6 +80,12 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
     ],
     "permissions": [ "android.permission.INTERNET" ],
     "metaData": []
+  },
+  "fileCopies": {
+    "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
+  },
+  "directoryCopies": {
+    "jniLibs": "launcher/jniLibs"
   }
 }
 ```
@@ -91,6 +97,8 @@ All fields are optional. You can place multiple config files — contents are au
 - **`mavenRepositories`**: Injected into root `settings.gradle`
 - **`gradleWrapper`**: Key-value pairs injected into `gradle-wrapper.properties`
 - **SDK versions** (`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`): Merged by taking the maximum numeric value across all configs (except `buildToolsVersion` which uses last-writer-wins)
+- **`fileCopies`**: Key-value map (source → destination) for copying files into the Gradle project. Supports relative and absolute paths
+- **`directoryCopies`**: Key-value map (source → destination) for copying directories into the Gradle project. Supports relative and absolute paths
 
 ## Dependencies
 

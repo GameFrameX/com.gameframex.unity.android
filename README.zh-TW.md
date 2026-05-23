@@ -80,6 +80,12 @@
     ],
     "permissions": [ "android.permission.INTERNET" ],
     "metaData": []
+  },
+  "fileCopies": {
+    "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
+  },
+  "directoryCopies": {
+    "jniLibs": "launcher/jniLibs"
   }
 }
 ```
@@ -91,6 +97,8 @@
 - **`mavenRepositories`**：注入到根 `settings.gradle`
 - **`gradleWrapper`**：鍵值對注入到 `gradle-wrapper.properties`
 - **SDK 版本**（`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`）：合併時取所有設定中的最大數值（`buildToolsVersion` 為後寫覆蓋）
+- **`fileCopies`**：鍵值對映射（源路徑 → 目標路徑），用於複製檔案到 Gradle 專案。支援相對路徑和絕對路徑
+- **`directoryCopies`**：鍵值對映射（源路徑 → 目標路徑），用於複製目錄到 Gradle 專案。支援相對路徑和絕對路徑
 
 ## 依賴
 

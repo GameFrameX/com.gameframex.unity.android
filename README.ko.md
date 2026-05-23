@@ -80,6 +80,12 @@
     ],
     "permissions": [ "android.permission.INTERNET" ],
     "metaData": []
+  },
+  "fileCopies": {
+    "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
+  },
+  "directoryCopies": {
+    "jniLibs": "launcher/jniLibs"
   }
 }
 ```
@@ -91,6 +97,8 @@
 - **`mavenRepositories`**: 루트 `settings.gradle`에 주입
 - **`gradleWrapper`**: 키-값 쌍을 `gradle-wrapper.properties`에 주입
 - **SDK 버전** (`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`): 병합 시 모든 설정에서 최대 숫자값을 채택 (`buildToolsVersion`은 마지막 작성자 우선)
+- **`fileCopies`**: 키-값 매핑 (소스 경로 → 대상 경로), Gradle 프로젝트에 파일 복사. 상대 경로 및 절대 경로 지원
+- **`directoryCopies`**: 키-값 매핑 (소스 경로 → 대상 경로), Gradle 프로젝트에 디렉토리 복사. 상대 경로 및 절대 경로 지원
 
 ## 종속성
 
