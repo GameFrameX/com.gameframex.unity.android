@@ -68,6 +68,7 @@ namespace GameFrameX.Android.Editor
             LogHelper.Log("Gradle root: " + gradleRoot);
 
             SetSettingsGradle(gradleRoot, config);
+            SetAndroidBlock(gradleRoot, config);
             SetBuildGradle(gradleRoot, config);
             SetManifest(gradleRoot, config);
             SetGradleWrapper(gradleRoot, config);

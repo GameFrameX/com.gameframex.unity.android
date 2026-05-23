@@ -93,6 +93,38 @@ namespace GameFrameX.Android.Editor
         /// List of AndroidManifest meta-data entries.
         /// </remarks>
         public List<ManifestMetaData> metaData = new();
+
+        /// <summary>
+        /// 编译 SDK 版本，注入到 android {} 块。合并时取最大值。
+        /// </summary>
+        /// <remarks>
+        /// Compile SDK version, injected into android {} block. Merged by taking the maximum value.
+        /// </remarks>
+        public string compileSdkVersion;
+
+        /// <summary>
+        /// 构建工具版本，注入到 android {} 块。合并时后写覆盖。
+        /// </summary>
+        /// <remarks>
+        /// Build tools version, injected into android {} block. Merged by last-writer-wins.
+        /// </remarks>
+        public string buildToolsVersion;
+
+        /// <summary>
+        /// 最低 SDK 版本，注入到 defaultConfig {} 块。合并时取最大值。
+        /// </summary>
+        /// <remarks>
+        /// Minimum SDK version, injected into defaultConfig {} block. Merged by taking the maximum value.
+        /// </remarks>
+        public string minSdkVersion;
+
+        /// <summary>
+        /// 目标 SDK 版本，注入到 defaultConfig {} 块。合并时取最大值。
+        /// </summary>
+        /// <remarks>
+        /// Target SDK version, injected into defaultConfig {} block. Merged by taking the maximum value.
+        /// </remarks>
+        public string targetSdkVersion;
     }
 
     /// <summary>

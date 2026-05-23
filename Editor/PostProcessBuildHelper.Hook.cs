@@ -72,7 +72,8 @@ namespace GameFrameX.Android.Editor
                     LogHelper.Log("  launcher: " +
                                   config.launcher.dependencies.Count + " dep(s), " +
                                   config.launcher.permissions.Count + " perm(s), " +
-                                  config.launcher.metaData.Count + " meta-data(s)");
+                                  config.launcher.metaData.Count + " meta-data(s)" +
+                                  PostProcessBuildHelper.LogSdkVersions(config.launcher));
                 }
 
                 if (config.unityLibrary != null)
@@ -80,7 +81,8 @@ namespace GameFrameX.Android.Editor
                     LogHelper.Log("  unityLibrary: " +
                                   config.unityLibrary.dependencies.Count + " dep(s), " +
                                   config.unityLibrary.permissions.Count + " perm(s), " +
-                                  config.unityLibrary.metaData.Count + " meta-data(s)");
+                                  config.unityLibrary.metaData.Count + " meta-data(s)" +
+                                  PostProcessBuildHelper.LogSdkVersions(config.unityLibrary));
                 }
             }
 

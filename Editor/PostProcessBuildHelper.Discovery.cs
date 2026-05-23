@@ -98,6 +98,7 @@ namespace GameFrameX.Android.Editor
             MergeDependencies(target, source, seenDeps);
             MergePermissions(target, source, seenPerms);
             MergeMetaData(target, source, seenMeta);
+            MergeSdkVersions(target, source);
         }
 
         private static AndroidBuildConfigFile LoadConfig(string filePath)
@@ -200,6 +201,69 @@ namespace GameFrameX.Android.Editor
             }
         }
 
+        private static void MergeSdkVersions(AndroidBuildConfigModule target, AndroidBuildConfigModule source)
+        {
+            MergeSdkVersionMax(target, source, nameof(AndroidBuildConfigModule.compileSdkVersion));
+            MergeSdkVersionMax(target, source, nameof(AndroidBuildConfigModule.minSdkVersion));
+            MergeSdkVersionMax(target, source, nameof(AndroidBuildConfigModule.targetSdkVersion));
+
+            if (!string.IsNullOrEmpty(source.buildToolsVersion))
+            {
+                target.buildToolsVersion = source.buildToolsVersion;
+            }
+        }
+
+        private static void MergeSdkVersionMax(AndroidBuildConfigModule target, AndroidBuildConfigModule source, string fieldName)
+        {
+            var sourceValue = GetSdkVersionField(source, fieldName);
+            if (string.IsNullOrEmpty(sourceValue))
+            {
+                return;
+            }
+
+            var targetValue = GetSdkVersionField(target, fieldName);
+            if (string.IsNullOrEmpty(targetValue))
+            {
+                SetSdkVersionField(target, fieldName, sourceValue);
+                return;
+            }
+
+            if (int.TryParse(sourceValue, out var sourceInt) && int.TryParse(targetValue, out var targetInt))
+            {
+                if (sourceInt > targetInt)
+                {
+                    SetSdkVersionField(target, fieldName, sourceValue);
+                }
+            }
+        }
+
+        private static string GetSdkVersionField(AndroidBuildConfigModule module, string fieldName)
+        {
+            return fieldName switch
+            {
+                nameof(AndroidBuildConfigModule.compileSdkVersion) => module.compileSdkVersion,
+                nameof(AndroidBuildConfigModule.minSdkVersion) => module.minSdkVersion,
+                nameof(AndroidBuildConfigModule.targetSdkVersion) => module.targetSdkVersion,
+                _ => null,
+            };
+        }
+
+        private static void SetSdkVersionField(AndroidBuildConfigModule module, string fieldName, string value)
+        {
+            switch (fieldName)
+            {
+                case nameof(AndroidBuildConfigModule.compileSdkVersion):
+                    module.compileSdkVersion = value;
+                    break;
+                case nameof(AndroidBuildConfigModule.minSdkVersion):
+                    module.minSdkVersion = value;
+                    break;
+                case nameof(AndroidBuildConfigModule.targetSdkVersion):
+                    module.targetSdkVersion = value;
+                    break;
+            }
+        }
+
         private static void LogMergedSummary(AndroidBuildConfigFile merged)
         {
             LogHelper.Log("Merged result: " +
@@ -211,7 +275,8 @@ namespace GameFrameX.Android.Editor
                 LogHelper.Log("  launcher: " +
                               merged.launcher.dependencies.Count + " dep(s), " +
                               merged.launcher.permissions.Count + " perm(s), " +
-                              merged.launcher.metaData.Count + " meta-data(s)");
+                              merged.launcher.metaData.Count + " meta-data(s)" +
+                              LogSdkVersions(merged.launcher));
             }
 
             if (merged.unityLibrary != null)
@@ -219,8 +284,19 @@ namespace GameFrameX.Android.Editor
                 LogHelper.Log("  unityLibrary: " +
                               merged.unityLibrary.dependencies.Count + " dep(s), " +
                               merged.unityLibrary.permissions.Count + " perm(s), " +
-                              merged.unityLibrary.metaData.Count + " meta-data(s)");
+                              merged.unityLibrary.metaData.Count + " meta-data(s)" +
+                              LogSdkVersions(merged.unityLibrary));
             }
+        }
+
+        internal static string LogSdkVersions(AndroidBuildConfigModule module)
+        {
+            var parts = new System.Collections.Generic.List<string>();
+            if (!string.IsNullOrEmpty(module.compileSdkVersion)) parts.Add("compileSdk=" + module.compileSdkVersion);
+            if (!string.IsNullOrEmpty(module.buildToolsVersion)) parts.Add("buildTools=" + module.buildToolsVersion);
+            if (!string.IsNullOrEmpty(module.minSdkVersion)) parts.Add("minSdk=" + module.minSdkVersion);
+            if (!string.IsNullOrEmpty(module.targetSdkVersion)) parts.Add("targetSdk=" + module.targetSdkVersion);
+            return parts.Count > 0 ? ", " + string.Join(", ", parts) : "";
         }
     }
 }
