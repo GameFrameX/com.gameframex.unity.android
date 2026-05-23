@@ -53,6 +53,24 @@ namespace GameFrameX.Android.Editor
         public Dictionary<string, string> gradleProperties = new Dictionary<string, string>();
 
         /// <summary>
+        /// 文件复制列表，源路径相对于配置文件目录，目标路径相对于 Gradle 根目录。
+        /// </summary>
+        /// <remarks>
+        /// File copy list. Source is relative to the config file directory,
+        /// destination is relative to the Gradle project root.
+        /// </remarks>
+        public List<FileCopyEntry> fileCopies = new List<FileCopyEntry>();
+
+        /// <summary>
+        /// 目录复制列表，源路径相对于配置文件目录，目标路径相对于 Gradle 根目录。
+        /// </summary>
+        /// <remarks>
+        /// Directory copy list. Source is relative to the config file directory,
+        /// destination is relative to the Gradle project root.
+        /// </remarks>
+        public List<FileCopyEntry> directoryCopies = new List<FileCopyEntry>();
+
+        /// <summary>
         /// launcher 模块配置（Android 应用壳）。
         /// </summary>
         /// <remarks>
@@ -245,6 +263,32 @@ namespace GameFrameX.Android.Editor
         /// Attribute value.
         /// </remarks>
         public string value;
+    }
+
+    /// <summary>
+    /// 文件或目录复制条目。
+    /// </summary>
+    /// <remarks>
+    /// File or directory copy entry.
+    /// </remarks>
+    [Serializable]
+    internal class FileCopyEntry
+    {
+        /// <summary>
+        /// 源路径（相对于配置文件所在目录）。
+        /// </summary>
+        /// <remarks>
+        /// Source path (relative to the config file's directory).
+        /// </remarks>
+        public string source;
+
+        /// <summary>
+        /// 目标路径（相对于 Gradle 项目根目录）。
+        /// </summary>
+        /// <remarks>
+        /// Destination path (relative to the Gradle project root).
+        /// </remarks>
+        public string destination;
     }
 }
 

@@ -73,6 +73,7 @@ namespace GameFrameX.Android.Editor
             SetManifest(gradleRoot, config);
             SetGradleWrapper(gradleRoot, config);
             SetGradleProperties(gradleRoot, config);
+            CopyFiles(gradleRoot, config);
         }
 
         /// <summary>

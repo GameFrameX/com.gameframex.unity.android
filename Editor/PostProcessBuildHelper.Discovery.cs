@@ -147,6 +147,47 @@ namespace GameFrameX.Android.Editor
                     }
                 }
 
+                var configDir = Path.GetDirectoryName(filePath);
+                if (decoded["fileCopies"] is System.Collections.ArrayList copies)
+                {
+                    foreach (System.Collections.Hashtable copy in copies)
+                    {
+                        var src = copy["source"] as string;
+                        var dst = copy["destination"] as string;
+                        if (string.IsNullOrEmpty(src) || string.IsNullOrEmpty(dst))
+                        {
+                            continue;
+                        }
+
+                        var absSource = Path.GetFullPath(Path.Combine(configDir, src));
+                        config.fileCopies.Add(new FileCopyEntry
+                        {
+                            source = absSource,
+                            destination = dst,
+                        });
+                    }
+                }
+
+                if (decoded["directoryCopies"] is System.Collections.ArrayList dirCopies)
+                {
+                    foreach (System.Collections.Hashtable copy in dirCopies)
+                    {
+                        var src = copy["source"] as string;
+                        var dst = copy["destination"] as string;
+                        if (string.IsNullOrEmpty(src) || string.IsNullOrEmpty(dst))
+                        {
+                            continue;
+                        }
+
+                        var absSource = Path.GetFullPath(Path.Combine(configDir, src));
+                        config.directoryCopies.Add(new FileCopyEntry
+                        {
+                            source = absSource,
+                            destination = dst,
+                        });
+                    }
+                }
+
                 if (decoded["launcher"] is System.Collections.Hashtable launcherObj)
                 {
                     config.launcher = ParseModule(launcherObj);
@@ -407,7 +448,9 @@ namespace GameFrameX.Android.Editor
             LogHelper.Log("Merged result: " +
                           merged.mavenRepositories.Count + " repo(s), " +
                           merged.gradleWrapper.Count + " gradle-wrapper prop(s), " +
-                          merged.gradleProperties.Count + " gradle prop(s)");
+                          merged.gradleProperties.Count + " gradle prop(s), " +
+                          merged.fileCopies.Count + " file copy(ies), " +
+                          merged.directoryCopies.Count + " dir copy(ies)");
 
             if (merged.launcher != null)
             {
