@@ -163,6 +163,22 @@ namespace GameFrameX.Android.Editor
         /// Target SDK version, injected into defaultConfig {} block. Merged by taking the maximum value.
         /// </remarks>
         public string targetSdkVersion;
+
+        /// <summary>
+        /// 应用标识符，注入到 defaultConfig {} 块。合并时后写覆盖。
+        /// </summary>
+        /// <remarks>
+        /// Application ID, injected into defaultConfig {} block. Merged by last-writer-wins.
+        /// </remarks>
+        public string applicationId;
+
+        /// <summary>
+        /// 版本名称，注入到 defaultConfig {} 块。合并时后写覆盖。
+        /// </summary>
+        /// <remarks>
+        /// Version name, injected into defaultConfig {} block. Merged by last-writer-wins.
+        /// </remarks>
+        public string versionName;
     }
 
     /// <summary>

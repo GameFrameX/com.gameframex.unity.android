@@ -37,7 +37,9 @@ namespace GameFrameX.Android.Editor
             var hasAndroidFields = !string.IsNullOrEmpty(configModule.compileSdkVersion) ||
                                    !string.IsNullOrEmpty(configModule.buildToolsVersion);
             var hasDefaultConfigFields = !string.IsNullOrEmpty(configModule.minSdkVersion) ||
-                                         !string.IsNullOrEmpty(configModule.targetSdkVersion);
+                                         !string.IsNullOrEmpty(configModule.targetSdkVersion) ||
+                                         !string.IsNullOrEmpty(configModule.applicationId) ||
+                                         !string.IsNullOrEmpty(configModule.versionName);
 
             if (!hasAndroidFields && !hasDefaultConfigFields)
             {
@@ -124,6 +126,10 @@ namespace GameFrameX.Android.Editor
                     defaultConfigEnd);
                 changed |= ReplaceOrInsertField(lines, "targetSdk", configModule.targetSdkVersion, defaultConfigStart,
                     defaultConfigEnd);
+                changed |= ReplaceOrInsertQuotedField(lines, "applicationId", configModule.applicationId,
+                    defaultConfigStart, defaultConfigEnd);
+                changed |= ReplaceOrInsertQuotedField(lines, "versionName", configModule.versionName,
+                    defaultConfigStart, defaultConfigEnd);
             }
             else if (hasDefaultConfigFields && androidStart >= 0 && androidEnd >= 0)
             {
@@ -139,6 +145,16 @@ namespace GameFrameX.Android.Editor
                 if (!string.IsNullOrEmpty(configModule.targetSdkVersion))
                 {
                     lines.Insert(insertIndex, "            targetSdkVersion " + configModule.targetSdkVersion);
+                }
+
+                if (!string.IsNullOrEmpty(configModule.applicationId))
+                {
+                    lines.Insert(insertIndex, "            applicationId \"" + configModule.applicationId + "\"");
+                }
+
+                if (!string.IsNullOrEmpty(configModule.versionName))
+                {
+                    lines.Insert(insertIndex, "            versionName \"" + configModule.versionName + "\"");
                 }
 
                 lines.Insert(insertIndex, "        defaultConfig {");
@@ -182,6 +198,34 @@ namespace GameFrameX.Android.Editor
         {
             var indent = originalLine.Substring(0, originalLine.Length - originalLine.TrimStart().Length);
             return indent + fieldKey + "Version " + value;
+        }
+
+        private static bool ReplaceOrInsertQuotedField(List<string> lines, string fieldKey, string value,
+            int blockStart, int blockEnd)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return false;
+            }
+
+            for (var i = blockStart; i <= blockEnd && i < lines.Count; i++)
+            {
+                var trimmed = lines[i].Trim();
+                if (trimmed.StartsWith(fieldKey) &&
+                    (trimmed.Length == fieldKey.Length || trimmed[fieldKey.Length] == ' ' ||
+                     trimmed[fieldKey.Length] == '='))
+                {
+                    var indent = lines[i].Substring(0, lines[i].Length - lines[i].TrimStart().Length);
+                    lines[i] = indent + fieldKey + " \"" + value + "\"";
+                    LogHelper.Log("  " + fieldKey + " -> " + value);
+                    return true;
+                }
+            }
+
+            var detectedIndent = DetectIndent(lines, blockStart);
+            lines.Insert(blockEnd, detectedIndent + fieldKey + " \"" + value + "\"");
+            LogHelper.Log("  + " + fieldKey + " " + value);
+            return true;
         }
 
         private static string DetectIndent(List<string> lines, int aroundIndex)

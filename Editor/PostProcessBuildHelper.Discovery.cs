@@ -212,6 +212,8 @@ namespace GameFrameX.Android.Editor
             module.buildToolsVersion = table["buildToolsVersion"] as string;
             module.minSdkVersion = table["minSdkVersion"] as string;
             module.targetSdkVersion = table["targetSdkVersion"] as string;
+            module.applicationId = table["applicationId"] as string;
+            module.versionName = table["versionName"] as string;
 
             if (table["dependencies"] is System.Collections.ArrayList deps)
             {
@@ -405,6 +407,16 @@ namespace GameFrameX.Android.Editor
             if (!string.IsNullOrEmpty(source.buildToolsVersion))
             {
                 target.buildToolsVersion = source.buildToolsVersion;
+            }
+
+            if (!string.IsNullOrEmpty(source.applicationId))
+            {
+                target.applicationId = source.applicationId;
+            }
+
+            if (!string.IsNullOrEmpty(source.versionName))
+            {
+                target.versionName = source.versionName;
             }
         }
 

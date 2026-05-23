@@ -14,6 +14,8 @@
     "buildToolsVersion": "34.0.0",
     "minSdkVersion": "24",
     "targetSdkVersion": "34",
+    "applicationId": "com.example.demo",
+    "versionName": "1.0.0",
     "dependencies": [
       {
         "configuration": "implementation",
