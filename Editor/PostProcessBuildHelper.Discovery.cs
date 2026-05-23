@@ -81,6 +81,7 @@ namespace GameFrameX.Android.Editor
                 MergeRepositories(merged, config, seenRepoUrls);
                 MergeGradleWrapper(merged, config);
                 MergeGradleProperties(merged, config);
+                MergeFileCopies(merged, config);
                 MergeModule(merged.launcher, config.launcher, launcherDeps, launcherPerms, launcherMeta, launcherAppAttrs);
                 MergeModule(merged.unityLibrary, config.unityLibrary, libDeps, libPerms, libMeta, libAppAttrs);
             }
@@ -148,43 +149,39 @@ namespace GameFrameX.Android.Editor
                 }
 
                 var configDir = Path.GetDirectoryName(filePath);
-                if (decoded["fileCopies"] is System.Collections.ArrayList copies)
+                if (decoded["fileCopies"] is System.Collections.Hashtable fileCopiesTable)
                 {
-                    foreach (System.Collections.Hashtable copy in copies)
+                    foreach (System.Collections.DictionaryEntry kvp in fileCopiesTable)
                     {
-                        var src = copy["source"] as string;
-                        var dst = copy["destination"] as string;
+                        var src = kvp.Key as string;
+                        var dst = kvp.Value as string;
                         if (string.IsNullOrEmpty(src) || string.IsNullOrEmpty(dst))
                         {
                             continue;
                         }
 
-                        var absSource = Path.GetFullPath(Path.Combine(configDir, src));
-                        config.fileCopies.Add(new FileCopyEntry
-                        {
-                            source = absSource,
-                            destination = dst,
-                        });
+                        var resolvedSrc = Path.IsPathRooted(src)
+                            ? src
+                            : Path.GetFullPath(Path.Combine(configDir, src));
+                        config.fileCopies[resolvedSrc] = dst;
                     }
                 }
 
-                if (decoded["directoryCopies"] is System.Collections.ArrayList dirCopies)
+                if (decoded["directoryCopies"] is System.Collections.Hashtable dirCopiesTable)
                 {
-                    foreach (System.Collections.Hashtable copy in dirCopies)
+                    foreach (System.Collections.DictionaryEntry kvp in dirCopiesTable)
                     {
-                        var src = copy["source"] as string;
-                        var dst = copy["destination"] as string;
+                        var src = kvp.Key as string;
+                        var dst = kvp.Value as string;
                         if (string.IsNullOrEmpty(src) || string.IsNullOrEmpty(dst))
                         {
                             continue;
                         }
 
-                        var absSource = Path.GetFullPath(Path.Combine(configDir, src));
-                        config.directoryCopies.Add(new FileCopyEntry
-                        {
-                            source = absSource,
-                            destination = dst,
-                        });
+                        var resolvedSrc = Path.IsPathRooted(src)
+                            ? src
+                            : Path.GetFullPath(Path.Combine(configDir, src));
+                        config.directoryCopies[resolvedSrc] = dst;
                     }
                 }
 
@@ -304,6 +301,25 @@ namespace GameFrameX.Android.Editor
             foreach (var kvp in source.gradleProperties)
             {
                 merged.gradleProperties[kvp.Key] = kvp.Value;
+            }
+        }
+
+        private static void MergeFileCopies(AndroidBuildConfigFile merged, AndroidBuildConfigFile source)
+        {
+            if (source.fileCopies != null)
+            {
+                foreach (var kvp in source.fileCopies)
+                {
+                    merged.fileCopies[kvp.Key] = kvp.Value;
+                }
+            }
+
+            if (source.directoryCopies != null)
+            {
+                foreach (var kvp in source.directoryCopies)
+                {
+                    merged.directoryCopies[kvp.Key] = kvp.Value;
+                }
             }
         }
 

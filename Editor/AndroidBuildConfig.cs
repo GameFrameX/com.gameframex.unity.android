@@ -53,22 +53,26 @@ namespace GameFrameX.Android.Editor
         public Dictionary<string, string> gradleProperties = new Dictionary<string, string>();
 
         /// <summary>
-        /// 文件复制列表，源路径相对于配置文件目录，目标路径相对于 Gradle 根目录。
+        /// 文件复制映射，key 为源路径，value 为目标路径。支持相对路径和绝对路径。
+        /// 相对源路径基于配置文件所在目录解析，相对目标路径基于 Gradle 根目录解析。
         /// </summary>
         /// <remarks>
-        /// File copy list. Source is relative to the config file directory,
-        /// destination is relative to the Gradle project root.
+        /// File copy map, key = source path, value = destination path. Supports both
+        /// relative and absolute paths. Relative source is resolved from the config
+        /// file directory, relative destination from the Gradle project root.
         /// </remarks>
-        public List<FileCopyEntry> fileCopies = new List<FileCopyEntry>();
+        public Dictionary<string, string> fileCopies = new Dictionary<string, string>();
 
         /// <summary>
-        /// 目录复制列表，源路径相对于配置文件目录，目标路径相对于 Gradle 根目录。
+        /// 目录复制映射，key 为源路径，value 为目标路径。支持相对路径和绝对路径。
+        /// 相对源路径基于配置文件所在目录解析，相对目标路径基于 Gradle 根目录解析。
         /// </summary>
         /// <remarks>
-        /// Directory copy list. Source is relative to the config file directory,
-        /// destination is relative to the Gradle project root.
+        /// Directory copy map, key = source path, value = destination path. Supports
+        /// both relative and absolute paths. Relative source is resolved from the
+        /// config file directory, relative destination from the Gradle project root.
         /// </remarks>
-        public List<FileCopyEntry> directoryCopies = new List<FileCopyEntry>();
+        public Dictionary<string, string> directoryCopies = new Dictionary<string, string>();
 
         /// <summary>
         /// launcher 模块配置（Android 应用壳）。
@@ -263,32 +267,6 @@ namespace GameFrameX.Android.Editor
         /// Attribute value.
         /// </remarks>
         public string value;
-    }
-
-    /// <summary>
-    /// 文件或目录复制条目。
-    /// </summary>
-    /// <remarks>
-    /// File or directory copy entry.
-    /// </remarks>
-    [Serializable]
-    internal class FileCopyEntry
-    {
-        /// <summary>
-        /// 源路径（相对于配置文件所在目录）。
-        /// </summary>
-        /// <remarks>
-        /// Source path (relative to the config file's directory).
-        /// </remarks>
-        public string source;
-
-        /// <summary>
-        /// 目标路径（相对于 Gradle 项目根目录）。
-        /// </summary>
-        /// <remarks>
-        /// Destination path (relative to the Gradle project root).
-        /// </remarks>
-        public string destination;
     }
 }
 

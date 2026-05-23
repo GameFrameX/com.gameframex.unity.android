@@ -46,5 +46,11 @@
       "android.permission.INTERNET"
     ],
     "metaData": []
+  },
+  "fileCopies": {
+    "libs/sdk-analytics.aar": "launcher/libs/sdk-analytics.aar"
+  },
+  "directoryCopies": {
+    "jniLibs": "launcher/jniLibs"
   }
 }

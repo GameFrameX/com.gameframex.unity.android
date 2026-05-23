@@ -24,51 +24,52 @@ namespace GameFrameX.Android.Editor
         {
             if (config.fileCopies != null)
             {
-                foreach (var entry in config.fileCopies)
+                foreach (var kvp in config.fileCopies)
                 {
-                    if (string.IsNullOrEmpty(entry.source) || string.IsNullOrEmpty(entry.destination))
+                    var source = kvp.Key;
+                    var destPath = ResolveDestinationPath(gradleRoot, kvp.Value);
+
+                    if (!File.Exists(source))
                     {
+                        LogHelper.Warning("File copy source not found or not a file: " + source);
                         continue;
                     }
 
-                    if (!File.Exists(entry.source))
-                    {
-                        LogHelper.Warning("File copy source not found or not a file: " + entry.source);
-                        continue;
-                    }
-
-                    var destPath = Path.Combine(gradleRoot, entry.destination);
                     var dir = Path.GetDirectoryName(destPath);
                     if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                     {
                         Directory.CreateDirectory(dir);
                     }
 
-                    File.Copy(entry.source, destPath, true);
-                    LogHelper.Log("+ Copy file: " + Path.GetFileName(entry.source) + " -> " + entry.destination);
+                    File.Copy(source, destPath, true);
+                    LogHelper.Log("+ Copy file: " + Path.GetFileName(source) + " -> " + kvp.Value);
                 }
             }
 
             if (config.directoryCopies != null)
             {
-                foreach (var entry in config.directoryCopies)
+                foreach (var kvp in config.directoryCopies)
                 {
-                    if (string.IsNullOrEmpty(entry.source) || string.IsNullOrEmpty(entry.destination))
+                    var source = kvp.Key;
+                    var destPath = ResolveDestinationPath(gradleRoot, kvp.Value);
+
+                    if (!Directory.Exists(source))
                     {
+                        LogHelper.Warning("Directory copy source not found or not a directory: " + source);
                         continue;
                     }
 
-                    if (!Directory.Exists(entry.source))
-                    {
-                        LogHelper.Warning("Directory copy source not found or not a directory: " + entry.source);
-                        continue;
-                    }
-
-                    var destPath = Path.Combine(gradleRoot, entry.destination);
-                    CopyDirectory(entry.source, destPath);
-                    LogHelper.Log("+ Copy dir: " + Path.GetFileName(entry.source) + " -> " + entry.destination);
+                    CopyDirectory(source, destPath);
+                    LogHelper.Log("+ Copy dir: " + Path.GetFileName(source) + " -> " + kvp.Value);
                 }
             }
+        }
+
+        private static string ResolveDestinationPath(string gradleRoot, string destination)
+        {
+            return Path.IsPathRooted(destination)
+                ? destination
+                : Path.Combine(gradleRoot, destination);
         }
 
         private static void CopyDirectory(string sourceDir, string destDir)

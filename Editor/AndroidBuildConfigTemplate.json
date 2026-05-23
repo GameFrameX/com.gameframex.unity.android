@@ -38,5 +38,11 @@
     "dependencies": [],
     "permissions": [],
     "metaData": []
+  },
+  "fileCopies": {
+    "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
+  },
+  "directoryCopies": {
+    "jniLibs": "launcher/jniLibs"
   }
 }
