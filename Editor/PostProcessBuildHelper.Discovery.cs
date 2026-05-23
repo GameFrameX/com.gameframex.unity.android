@@ -188,11 +188,13 @@ namespace GameFrameX.Android.Editor
                 if (decoded["launcher"] is System.Collections.Hashtable launcherObj)
                 {
                     config.launcher = ParseModule(launcherObj);
+                    config.launcher.signingConfig = ParseSigningConfig(launcherObj, configDir);
                 }
 
                 if (decoded["unityLibrary"] is System.Collections.Hashtable unityLibObj)
                 {
                     config.unityLibrary = ParseModule(unityLibObj);
+                    config.unityLibrary.signingConfig = ParseSigningConfig(unityLibObj, configDir);
                 }
 
                 return config;
@@ -260,6 +262,32 @@ namespace GameFrameX.Android.Editor
             }
 
             return module;
+        }
+
+        private static SigningConfig ParseSigningConfig(System.Collections.Hashtable table, string configDir)
+        {
+            if (!(table["signingConfig"] is System.Collections.Hashtable signingObj))
+            {
+                return null;
+            }
+
+            var storeFile = signingObj["storeFile"] as string;
+            if (string.IsNullOrEmpty(storeFile))
+            {
+                return null;
+            }
+
+            var resolvedStoreFile = Path.IsPathRooted(storeFile)
+                ? storeFile
+                : Path.GetFullPath(Path.Combine(configDir, storeFile));
+
+            return new SigningConfig
+            {
+                storeFile = resolvedStoreFile,
+                storePassword = signingObj["storePassword"] as string,
+                keyAlias = signingObj["keyAlias"] as string,
+                keyPassword = signingObj["keyPassword"] as string,
+            };
         }
 
         private static void MergeRepositories(AndroidBuildConfigFile merged, AndroidBuildConfigFile source, HashSet<string> seen)
@@ -417,6 +445,11 @@ namespace GameFrameX.Android.Editor
             if (!string.IsNullOrEmpty(source.versionName))
             {
                 target.versionName = source.versionName;
+            }
+
+            if (source.signingConfig != null)
+            {
+                target.signingConfig = source.signingConfig;
             }
         }
 

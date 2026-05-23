@@ -179,6 +179,14 @@ namespace GameFrameX.Android.Editor
         /// Version name, injected into defaultConfig {} block. Merged by last-writer-wins.
         /// </remarks>
         public string versionName;
+
+        /// <summary>
+        /// 签名配置，注入到 build.gradle 的 signingConfigs {} 和 buildTypes {} 块。
+        /// </summary>
+        /// <remarks>
+        /// Signing configuration, injected into signingConfigs {} and buildTypes {} blocks in build.gradle.
+        /// </remarks>
+        public SigningConfig signingConfig;
     }
 
     /// <summary>
@@ -283,6 +291,48 @@ namespace GameFrameX.Android.Editor
         /// Attribute value.
         /// </remarks>
         public string value;
+    }
+
+    /// <summary>
+    /// Android 签名配置。
+    /// </summary>
+    /// <remarks>
+    /// Android signing configuration.
+    /// </remarks>
+    [Serializable]
+    internal class SigningConfig
+    {
+        /// <summary>
+        /// 密钥库文件路径，支持相对路径和绝对路径。
+        /// </summary>
+        /// <remarks>
+        /// Keystore file path, supports relative and absolute paths.
+        /// </remarks>
+        public string storeFile;
+
+        /// <summary>
+        /// 密钥库密码。
+        /// </summary>
+        /// <remarks>
+        /// Keystore password.
+        /// </remarks>
+        public string storePassword;
+
+        /// <summary>
+        /// 密钥别名。
+        /// </summary>
+        /// <remarks>
+        /// Key alias.
+        /// </remarks>
+        public string keyAlias;
+
+        /// <summary>
+        /// 密钥密码。
+        /// </summary>
+        /// <remarks>
+        /// Key password.
+        /// </remarks>
+        public string keyPassword;
     }
 }
 
