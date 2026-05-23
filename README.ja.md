@@ -62,6 +62,8 @@
     "buildToolsVersion": "34.0.0",
     "minSdkVersion": "24",
     "targetSdkVersion": "34",
+    "applicationId": "com.example.demo",
+    "versionName": "1.0.0",
     "dependencies": [
       { "configuration": "implementation", "notation": "com.example:sdk-analytics:2.0.0" }
     ],
@@ -97,6 +99,8 @@
 - **`mavenRepositories`**: ルートの `settings.gradle` に注入
 - **`gradleWrapper`**: キーと値のペアを `gradle-wrapper.properties` に注入
 - **SDK バージョン**（`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`）: マージ時に全設定中の最大数値を採用（`buildToolsVersion` は後勝ち）
+- **`applicationId`**: アプリケーション識別子、`defaultConfig {}` に注入、マージは後勝ち
+- **`versionName`**: バージョン名、`defaultConfig {}` に注入、マージは後勝ち
 - **`fileCopies`**: キーと値のマッピング（ソースパス → コピー先パス）、Gradle プロジェクトにファイルをコピー。相対パスと絶対パスに対応
 - **`directoryCopies`**: キーと値のマッピング（ソースパス → コピー先パス）、Gradle プロジェクトにディレクトリをコピー。相対パスと絶対パスに対応
 

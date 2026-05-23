@@ -62,6 +62,8 @@
     "buildToolsVersion": "34.0.0",
     "minSdkVersion": "24",
     "targetSdkVersion": "34",
+    "applicationId": "com.example.demo",
+    "versionName": "1.0.0",
     "dependencies": [
       { "configuration": "implementation", "notation": "com.example:sdk-analytics:2.0.0" }
     ],
@@ -97,6 +99,8 @@
 - **`mavenRepositories`**：注入到根 `settings.gradle`
 - **`gradleWrapper`**：键值对注入到 `gradle-wrapper.properties`
 - **SDK 版本**（`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`）：合并时取所有配置中的最大数值（`buildToolsVersion` 为后写覆盖）
+- **`applicationId`**：应用标识符，注入到 `defaultConfig {}`，合并策略为后写覆盖
+- **`versionName`**：版本名称，注入到 `defaultConfig {}`，合并策略为后写覆盖
 - **`fileCopies`**：键值对映射（源路径 → 目标路径），用于复制文件到 Gradle 项目。支持相对路径和绝对路径
 - **`directoryCopies`**：键值对映射（源路径 → 目标路径），用于复制目录到 Gradle 项目。支持相对路径和绝对路径
 

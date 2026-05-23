@@ -62,6 +62,8 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
     "buildToolsVersion": "34.0.0",
     "minSdkVersion": "24",
     "targetSdkVersion": "34",
+    "applicationId": "com.example.demo",
+    "versionName": "1.0.0",
     "dependencies": [
       { "configuration": "implementation", "notation": "com.example:sdk-analytics:2.0.0" }
     ],
@@ -97,6 +99,8 @@ All fields are optional. You can place multiple config files — contents are au
 - **`mavenRepositories`**: Injected into root `settings.gradle`
 - **`gradleWrapper`**: Key-value pairs injected into `gradle-wrapper.properties`
 - **SDK versions** (`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`): Merged by taking the maximum numeric value across all configs (except `buildToolsVersion` which uses last-writer-wins)
+- **`applicationId`**: Application identifier injected into `defaultConfig {}`, merged by last-writer-wins
+- **`versionName`**: Version name string injected into `defaultConfig {}`, merged by last-writer-wins
 - **`fileCopies`**: Key-value map (source → destination) for copying files into the Gradle project. Supports relative and absolute paths
 - **`directoryCopies`**: Key-value map (source → destination) for copying directories into the Gradle project. Supports relative and absolute paths
 
