@@ -53,6 +53,29 @@ namespace GameFrameX.Android.Editor
                     CreateAndInjectStringResources(stringsPath, config.unityLibrary.stringResources);
                 }
             }
+
+            if (config.localizedStringResources != null && config.localizedStringResources.Count > 0)
+            {
+                foreach (var localeKvp in config.localizedStringResources)
+                {
+                    if (string.IsNullOrEmpty(localeKvp.Key) || localeKvp.Value == null || localeKvp.Value.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    var localeDir = Path.Combine(gradleRoot, "launcher", "src", "main", "res", "values-" + localeKvp.Key);
+                    var localePath = Path.Combine(localeDir, "strings.xml");
+                    var existingPath = FindFile(gradleRoot, Path.Combine("launcher", "src", "main", "res", "values-" + localeKvp.Key, "strings.xml"));
+                    if (!string.IsNullOrEmpty(existingPath))
+                    {
+                        InjectStringResources(existingPath, localeKvp.Value);
+                    }
+                    else
+                    {
+                        CreateAndInjectStringResources(localePath, localeKvp.Value);
+                    }
+                }
+            }
         }
 
         /// <summary>

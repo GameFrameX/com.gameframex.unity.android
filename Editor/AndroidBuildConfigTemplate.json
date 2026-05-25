@@ -63,5 +63,13 @@
       "deliveryType": "install-time",
       "streamingAssetsPath": "YourStreamingAssetsSubDir"
     }
-  ]
+  ],
+  "localizedStringResources": {
+    "zh-rCN": {
+      "app_name": "你的应用名称"
+    },
+    "ja": {
+      "app_name": "あなたのアプリ名"
+    }
+  }
 }

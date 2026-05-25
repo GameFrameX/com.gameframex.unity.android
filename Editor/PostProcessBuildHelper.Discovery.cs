@@ -88,6 +88,7 @@ namespace GameFrameX.Android.Editor
                     merged.assetPacksEnabled = true;
                 }
                 MergeAssetPacks(merged, config, seenAssetPackNames);
+                MergeLocalizedStringResources(merged, config);
                 MergeModule(merged.launcher, config.launcher, launcherDeps, launcherPerms, launcherMeta, launcherAppAttrs);
                 MergeModule(merged.unityLibrary, config.unityLibrary, libDeps, libPerms, libMeta, libAppAttrs);
             }
@@ -207,6 +208,33 @@ namespace GameFrameX.Android.Editor
                             deliveryType = pack["deliveryType"] as string,
                             streamingAssetsPath = pack["streamingAssetsPath"] as string,
                         });
+                    }
+                }
+
+                if (decoded["localizedStringResources"] is System.Collections.Hashtable localizedRes)
+                {
+                    foreach (System.Collections.DictionaryEntry localeEntry in localizedRes)
+                    {
+                        var locale = localeEntry.Key as string;
+                        if (string.IsNullOrEmpty(locale))
+                        {
+                            continue;
+                        }
+
+                        if (localeEntry.Value is System.Collections.Hashtable localeStrings)
+                        {
+                            var dict = new Dictionary<string, string>();
+                            foreach (System.Collections.DictionaryEntry kvp in localeStrings)
+                            {
+                                var key = kvp.Key as string;
+                                if (!string.IsNullOrEmpty(key))
+                                {
+                                    dict[key] = kvp.Value as string;
+                                }
+                            }
+
+                            config.localizedStringResources[locale] = dict;
+                        }
                     }
                 }
 
@@ -517,6 +545,33 @@ namespace GameFrameX.Android.Editor
             }
         }
 
+        private static void MergeLocalizedStringResources(AndroidBuildConfigFile target, AndroidBuildConfigFile source)
+        {
+            if (source.localizedStringResources == null)
+            {
+                return;
+            }
+
+            foreach (var localeKvp in source.localizedStringResources)
+            {
+                if (string.IsNullOrEmpty(localeKvp.Key) || localeKvp.Value == null)
+                {
+                    continue;
+                }
+
+                if (!target.localizedStringResources.TryGetValue(localeKvp.Key, out var targetLocale))
+                {
+                    targetLocale = new Dictionary<string, string>();
+                    target.localizedStringResources[localeKvp.Key] = targetLocale;
+                }
+
+                foreach (var kvp in localeKvp.Value)
+                {
+                    targetLocale[kvp.Key] = kvp.Value;
+                }
+            }
+        }
+
         private static void MergeSdkVersions(AndroidBuildConfigModule target, AndroidBuildConfigModule source)
         {
             MergeSdkVersionMax(target, source, nameof(AndroidBuildConfigModule.compileSdkVersion));
@@ -603,7 +658,8 @@ namespace GameFrameX.Android.Editor
                           merged.gradleProperties.Count + " gradle prop(s), " +
                           merged.fileCopies.Count + " file copy(ies), " +
                           merged.directoryCopies.Count + " dir copy(ies), " +
-                          merged.assetPacks.Count + " asset pack(s)");
+                          merged.assetPacks.Count + " asset pack(s), " +
+                          merged.localizedStringResources.Count + " locale(s)");
 
             if (merged.launcher != null)
             {

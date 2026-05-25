@@ -39,6 +39,7 @@
       "keyPassword": "your_key_password"
     },
     "stringResources": {
+      "app_name": "Restart Life",
       "facebook_app_id": "724358863922328",
       "facebook_app_scheme": "fb724358863922328",
       "facebook_client_token": "5d534e3ed23cc4769c7e544d0d668dfb"
@@ -78,5 +79,52 @@
       "deliveryType": "on-demand",
       "streamingAssetsPath": "DLC"
     }
-  ]
+  ],
+  "localizedStringResources": {
+    "en": {
+      "app_name": "Restart Life"
+    },
+    "zh-rCN": {
+      "app_name": "重启人生"
+    },
+    "zh-rTW": {
+      "app_name": "重啟人生"
+    },
+    "ja": {
+      "app_name": "リスタートライフ"
+    },
+    "ko": {
+      "app_name": "리스타트 라이프"
+    },
+    "de": {
+      "app_name": "Restart Life"
+    },
+    "fr": {
+      "app_name": "Restart Life"
+    },
+    "es": {
+      "app_name": "Restart Life"
+    },
+    "pt": {
+      "app_name": "Restart Life"
+    },
+    "ru": {
+      "app_name": "Restart Life"
+    },
+    "th": {
+      "app_name": "Restart Life"
+    },
+    "vi": {
+      "app_name": "Restart Life"
+    },
+    "id": {
+      "app_name": "Restart Life"
+    },
+    "ar": {
+      "app_name": "Restart Life"
+    },
+    "tr": {
+      "app_name": "Restart Life"
+    }
+  }
 }

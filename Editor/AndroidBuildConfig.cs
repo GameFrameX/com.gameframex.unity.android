@@ -93,6 +93,16 @@ namespace GameFrameX.Android.Editor
         public List<AssetPackConfig> assetPacks = new List<AssetPackConfig>();
 
         /// <summary>
+        /// 本地化 string 资源映射，注入到 launcher 的 res/values-&lt;locale&gt;/strings.xml。
+        /// 外层 key 为 locale 编码（如 "zh-rCN"、"ja"），内层 key 为资源 name，value 为文本值。合并时按 locale 分组，每组内后写覆盖。
+        /// </summary>
+        /// <remarks>
+        /// Localized string resource map, injected into launcher's res/values-&lt;locale&gt;/strings.xml.
+        /// Outer key = locale code (e.g. "zh-rCN", "ja"), inner key = resource name, value = text. Merged per-locale by last-writer-wins.
+        /// </remarks>
+        public Dictionary<string, Dictionary<string, string>> localizedStringResources = new Dictionary<string, Dictionary<string, string>>();
+
+        /// <summary>
         /// launcher 模块配置（Android 应用壳）。
         /// </summary>
         /// <remarks>
