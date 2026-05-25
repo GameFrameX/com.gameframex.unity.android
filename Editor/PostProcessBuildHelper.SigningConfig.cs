@@ -49,214 +49,35 @@ namespace GameFrameX.Android.Editor
             }
 
             var lines = new List<string>(File.ReadAllLines(filePath));
-            var changed = false;
+            var storeFilePath = signingConfig.storeFile.Replace('\\', '/');
 
-            var androidStart = -1;
-            var androidEnd = -1;
-            var braceDepth = 0;
-            var inAndroid = false;
-            var signingConfigsStart = -1;
-            var signingConfigsEnd = -1;
-            var inSigningConfigs = false;
-            var signingConfigsBraceDepth = 0;
-            var buildTypesReleaseStart = -1;
-            var buildTypesReleaseEnd = -1;
-            var inBuildTypes = false;
-            var inBuildTypesRelease = false;
-            var buildTypesBraceDepth = 0;
-
-            for (var i = 0; i < lines.Count; i++)
+            if (ContainsLine(lines, "storeFile file(\"" + storeFilePath + "\")"))
             {
-                var trimmed = lines[i].Trim();
-
-                if (!inAndroid && trimmed.StartsWith("android") && trimmed.Contains("{"))
-                {
-                    inAndroid = true;
-                    androidStart = i;
-                    braceDepth = 1;
-                    continue;
-                }
-
-                if (inAndroid)
-                {
-                    if (trimmed.Contains("{"))
-                    {
-                        braceDepth++;
-                    }
-
-                    if (trimmed.Contains("}"))
-                    {
-                        braceDepth--;
-                        if (braceDepth == 0)
-                        {
-                            androidEnd = i;
-                            inAndroid = false;
-                            continue;
-                        }
-                    }
-
-                    if (!inSigningConfigs && trimmed.StartsWith("signingConfigs") && trimmed.Contains("{"))
-                    {
-                        inSigningConfigs = true;
-                        signingConfigsStart = i;
-                        signingConfigsBraceDepth = 1;
-                        continue;
-                    }
-
-                    if (inSigningConfigs)
-                    {
-                        if (trimmed.Contains("{"))
-                        {
-                            signingConfigsBraceDepth++;
-                        }
-
-                        if (trimmed.Contains("}"))
-                        {
-                            signingConfigsBraceDepth--;
-                            if (signingConfigsBraceDepth == 0)
-                            {
-                                inSigningConfigs = false;
-                                signingConfigsEnd = i;
-                            }
-                        }
-
-                        continue;
-                    }
-
-                    if (!inBuildTypes && trimmed.StartsWith("buildTypes") && trimmed.Contains("{"))
-                    {
-                        inBuildTypes = true;
-                        buildTypesBraceDepth = 1;
-                        continue;
-                    }
-
-                    if (inBuildTypes)
-                    {
-                        if (trimmed.Contains("{"))
-                        {
-                            buildTypesBraceDepth++;
-                        }
-
-                        if (trimmed.Contains("}"))
-                        {
-                            buildTypesBraceDepth--;
-                            if (buildTypesBraceDepth == 0)
-                            {
-                                inBuildTypes = false;
-                            }
-                        }
-
-                        if (!inBuildTypesRelease && trimmed.StartsWith("release") && trimmed.Contains("{"))
-                        {
-                            inBuildTypesRelease = true;
-                            buildTypesReleaseStart = i;
-                            continue;
-                        }
-
-                        if (inBuildTypesRelease)
-                        {
-                            if (trimmed == "}")
-                            {
-                                inBuildTypesRelease = false;
-                                buildTypesReleaseEnd = i;
-                            }
-                            else if (trimmed.Contains("signingConfig"))
-                            {
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (androidStart < 0)
-            {
-                LogHelper.Warning("Could not find android {} block in " + module + "/build.gradle");
+                LogHelper.Log(module + "/build.gradle already contains this signing config, skipping");
                 return;
             }
 
-            var storeFilePath = signingConfig.storeFile.Replace('\\', '/');
+            // Append new android {} block at end of file.
+            // Gradle merges multiple android {} blocks, later declarations override earlier ones.
+            lines.Add("");
+            lines.Add("android {");
+            lines.Add("    signingConfigs {");
+            lines.Add("        release {");
+            lines.Add("            storeFile file(\"" + storeFilePath + "\")");
+            lines.Add("            storePassword \"" + signingConfig.storePassword + "\"");
+            lines.Add("            keyAlias \"" + signingConfig.keyAlias + "\"");
+            lines.Add("            keyPassword \"" + signingConfig.keyPassword + "\"");
+            lines.Add("        }");
+            lines.Add("    }");
+            lines.Add("    buildTypes {");
+            lines.Add("        release {");
+            lines.Add("            signingConfig signingConfigs.release");
+            lines.Add("        }");
+            lines.Add("    }");
+            lines.Add("}");
 
-            if (signingConfigsStart >= 0 && signingConfigsEnd >= 0)
-            {
-                var releaseExists = false;
-                for (var i = signingConfigsStart; i <= signingConfigsEnd; i++)
-                {
-                    if (lines[i].Trim().StartsWith("release"))
-                    {
-                        releaseExists = true;
-                        break;
-                    }
-                }
-
-                if (!releaseExists)
-                {
-                    var indent = DetectSignIndent(lines, signingConfigsStart);
-                    lines.Insert(signingConfigsEnd, indent + "}");
-                    lines.Insert(signingConfigsEnd, indent + "    keyPassword \"" + signingConfig.keyPassword + "\"");
-                    lines.Insert(signingConfigsEnd, indent + "    keyAlias \"" + signingConfig.keyAlias + "\"");
-                    lines.Insert(signingConfigsEnd, indent + "    storePassword \"" + signingConfig.storePassword + "\"");
-                    lines.Insert(signingConfigsEnd, indent + "    storeFile file(\"" + storeFilePath + "\")");
-                    lines.Insert(signingConfigsEnd, indent + "release {");
-                    changed = true;
-                }
-            }
-            else
-            {
-                var insertAt = androidEnd >= 0 ? androidEnd : lines.Count;
-                var indent = DetectSignIndent(lines, androidStart);
-                lines.Insert(insertAt, indent + "}");
-                lines.Insert(insertAt, indent + "        keyPassword \"" + signingConfig.keyPassword + "\"");
-                lines.Insert(insertAt, indent + "        keyAlias \"" + signingConfig.keyAlias + "\"");
-                lines.Insert(insertAt, indent + "        storePassword \"" + signingConfig.storePassword + "\"");
-                lines.Insert(insertAt, indent + "        storeFile file(\"" + storeFilePath + "\")");
-                lines.Insert(insertAt, indent + "    release {");
-                lines.Insert(insertAt, indent + "signingConfigs {");
-                changed = true;
-            }
-
-            if (buildTypesReleaseStart >= 0 && buildTypesReleaseEnd >= 0)
-            {
-                var indent = DetectSignIndent(lines, buildTypesReleaseStart);
-                lines.Insert(buildTypesReleaseEnd, indent + "    signingConfig signingConfigs.release");
-                changed = true;
-            }
-            else if (androidEnd >= 0)
-            {
-                var targetIndex = androidEnd + (changed ? 7 : 0);
-                var indent = DetectSignIndent(lines, androidStart);
-                lines.Insert(targetIndex, indent + "    }");
-                lines.Insert(targetIndex, indent + "        signingConfig signingConfigs.release");
-                lines.Insert(targetIndex, indent + "    release {");
-                lines.Insert(targetIndex, indent + "buildTypes {");
-                changed = true;
-            }
-
-            if (changed)
-            {
-                File.WriteAllLines(filePath, lines);
-                LogHelper.Log("Injected signing config into " + module + "/build.gradle");
-            }
-        }
-
-        private static string DetectSignIndent(List<string> lines, int aroundIndex)
-        {
-            for (var i = aroundIndex + 1; i < lines.Count && i < aroundIndex + 10; i++)
-            {
-                var trimmed = lines[i].TrimStart();
-                if (trimmed.Length == 0)
-                {
-                    continue;
-                }
-
-                var indent = lines[i].Substring(0, lines[i].Length - trimmed.Length);
-                if (indent.Length > 0)
-                {
-                    return indent;
-                }
-            }
-
-            return "    ";
+            File.WriteAllLines(filePath, lines);
+            LogHelper.Log("Injected signing config into " + module + "/build.gradle");
         }
     }
 }
