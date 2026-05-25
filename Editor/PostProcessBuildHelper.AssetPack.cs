@@ -183,7 +183,7 @@ namespace GameFrameX.Android.Editor
                 packRefs.Add("':" + pack.name + "'");
             }
 
-            var assetPacksLine = "assetPacks " + string.Join(", ", packRefs);
+            var assetPacksLine = "assetPacks = [" + string.Join(", ", packRefs) + "]";
 
             if (ContainsLine(lines, "assetPacks"))
             {
