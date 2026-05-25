@@ -2,53 +2,16 @@
   "providerName": "Your SDK Name",
   "mavenRepositories": [
     {
-      "name": "Your Maven Repo Name",
+      "name": "MavenRepoName",
       "url": "https://your-maven-repo.example.com/"
     }
   ],
   "gradleWrapper": {
     "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
   },
-  "launcher": {
-    "compileSdkVersion": "34",
-    "buildToolsVersion": "34.0.0",
-    "minSdkVersion": "24",
-    "targetSdkVersion": "34",
-    "applicationId": "com.yourcompany.yourapp",
-    "versionName": "1.0.0",
-    "dependencies": [
-      {
-        "configuration": "implementation",
-        "notation": "com.example:sdk:1.0.0"
-      }
-    ],
-    "permissions": [
-      "android.permission.INTERNET"
-    ],
-    "metaData": [
-      {
-        "name": "com.example.key",
-        "value": "your_value"
-      }
-    ],
-    "signingConfig": {
-      "storeFile": "keystore/your-release-key.jks",
-      "storePassword": "your_store_password",
-      "keyAlias": "your_key_alias",
-      "keyPassword": "your_key_password"
-    },
-    "stringResources": {
-      "app_name": "Your App Name"
-    }
-  },
-  "unityLibrary": {
-    "compileSdkVersion": "34",
-    "buildToolsVersion": "34.0.0",
-    "minSdkVersion": "24",
-    "targetSdkVersion": "34",
-    "dependencies": [],
-    "permissions": [],
-    "metaData": []
+  "gradleProperties": {
+    "android.useAndroidX": "true",
+    "org.gradle.jvmargs": "-Xmx4096m"
   },
   "fileCopies": {
     "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
@@ -65,11 +28,75 @@
     }
   ],
   "localizedStringResources": {
+    "en": {
+      "app_name": "Your App Name"
+    },
     "zh-rCN": {
       "app_name": "你的应用名称"
     },
     "ja": {
       "app_name": "あなたのアプリ名"
     }
+  },
+  "launcher": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
+    "applicationId": "com.yourcompany.yourapp",
+    "versionName": "1.0.0",
+    "dependencies": [
+      {
+        "configuration": "implementation",
+        "notation": "com.example:sdk:1.0.0"
+      }
+    ],
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_NETWORK_STATE"
+    ],
+    "metaData": [
+      {
+        "name": "com.example.key",
+        "value": "your_value"
+      }
+    ],
+    "applicationAttributes": [
+      {
+        "name": "usesCleartextTraffic",
+        "value": "true"
+      }
+    ],
+    "signingConfig": {
+      "storeFile": "keystore/your-release-key.jks",
+      "storePassword": "your_store_password",
+      "keyAlias": "your_key_alias",
+      "keyPassword": "your_key_password"
+    },
+    "stringResources": {
+      "app_name": "Your App Name",
+      "facebook_app_id": "your_facebook_app_id",
+      "facebook_client_token": "your_facebook_client_token",
+      "facebook_app_scheme": "fb_your_facebook_app_id",
+      "google_app_id": "your_google_app_id",
+      "default_web_client_id": "your_web_client_id.apps.googleusercontent.com",
+      "firebase_database_url": "https://your-project.firebaseio.com",
+      "gcm_defaultSenderId": "your_fcm_sender_id",
+      "project_id": "your-firebase-project-id",
+      "google_api_key": "your_google_api_key",
+      "google_crash_reporting_api_key": "your_crash_reporting_key",
+      "google_storage_bucket": "your-project.appspot.com"
+    }
+  },
+  "unityLibrary": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
+    "dependencies": [],
+    "permissions": [],
+    "metaData": [],
+    "applicationAttributes": [],
+    "stringResources": {}
   }
 }

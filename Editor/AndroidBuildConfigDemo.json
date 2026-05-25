@@ -2,6 +2,10 @@
   "providerName": "Demo SDK",
   "mavenRepositories": [
     {
+      "name": "GoogleMaven",
+      "url": "https://dl.google.com/dl/android/maven2/"
+    },
+    {
       "name": "DemoMavenRepo",
       "url": "https://maven.example.com/repository/maven-releases/"
     }
@@ -9,57 +13,9 @@
   "gradleWrapper": {
     "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
   },
-  "launcher": {
-    "compileSdkVersion": "34",
-    "buildToolsVersion": "34.0.0",
-    "minSdkVersion": "24",
-    "targetSdkVersion": "34",
-    "applicationId": "com.example.demo",
-    "versionName": "1.0.0",
-    "dependencies": [
-      {
-        "configuration": "implementation",
-        "notation": "com.example:sdk-analytics:2.0.0"
-      }
-    ],
-    "permissions": [
-      "android.permission.INTERNET",
-      "android.permission.ACCESS_NETWORK_STATE"
-    ],
-    "metaData": [
-      {
-        "name": "com.example.analytics.APP_ID",
-        "value": "your_app_id"
-      }
-    ],
-    "signingConfig": {
-      "storeFile": "keystore/release.jks",
-      "storePassword": "your_store_password",
-      "keyAlias": "release",
-      "keyPassword": "your_key_password"
-    },
-    "stringResources": {
-      "app_name": "Restart Life",
-      "facebook_app_id": "724358863922328",
-      "facebook_app_scheme": "fb724358863922328",
-      "facebook_client_token": "5d534e3ed23cc4769c7e544d0d668dfb"
-    }
-  },
-  "unityLibrary": {
-    "compileSdkVersion": "34",
-    "buildToolsVersion": "34.0.0",
-    "minSdkVersion": "24",
-    "targetSdkVersion": "34",
-    "dependencies": [
-      {
-        "configuration": "implementation",
-        "notation": "com.example:sdk-core:2.0.0"
-      }
-    ],
-    "permissions": [
-      "android.permission.INTERNET"
-    ],
-    "metaData": []
+  "gradleProperties": {
+    "android.useAndroidX": "true",
+    "org.gradle.jvmargs": "-Xmx4096m"
   },
   "fileCopies": {
     "libs/sdk-analytics.aar": "launcher/libs/sdk-analytics.aar"
@@ -126,5 +82,77 @@
     "tr": {
       "app_name": "Restart Life"
     }
+  },
+  "launcher": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
+    "applicationId": "com.example.demo",
+    "versionName": "1.0.0",
+    "dependencies": [
+      {
+        "configuration": "implementation",
+        "notation": "com.example:sdk-analytics:2.0.0"
+      },
+      {
+        "configuration": "implementation",
+        "notation": "com.facebook.android:facebook-android-sdk:16.0.0"
+      }
+    ],
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.ACCESS_NETWORK_STATE"
+    ],
+    "metaData": [
+      {
+        "name": "com.example.analytics.APP_ID",
+        "value": "your_app_id"
+      }
+    ],
+    "applicationAttributes": [
+      {
+        "name": "usesCleartextTraffic",
+        "value": "true"
+      }
+    ],
+    "signingConfig": {
+      "storeFile": "keystore/release.jks",
+      "storePassword": "your_store_password",
+      "keyAlias": "release",
+      "keyPassword": "your_key_password"
+    },
+    "stringResources": {
+      "app_name": "Restart Life",
+      "facebook_app_id": "724358863922328",
+      "facebook_app_scheme": "fb724358863922328",
+      "facebook_client_token": "5d534e3ed23cc4769c7e544d0d668dfb",
+      "google_app_id": "1:123456789012:android:abcdef123456",
+      "default_web_client_id": "123456789012-abc.apps.googleusercontent.com",
+      "firebase_database_url": "https://restart-life-default.firebaseio.com",
+      "gcm_defaultSenderId": "123456789012",
+      "project_id": "restart-life",
+      "google_api_key": "AIzaSyExampleKey",
+      "google_crash_reporting_api_key": "AIzaSyCrashReportKey",
+      "google_storage_bucket": "restart-life.appspot.com"
+    }
+  },
+  "unityLibrary": {
+    "compileSdkVersion": "34",
+    "buildToolsVersion": "34.0.0",
+    "minSdkVersion": "24",
+    "targetSdkVersion": "34",
+    "dependencies": [
+      {
+        "configuration": "implementation",
+        "notation": "com.example:sdk-core:2.0.0"
+      }
+    ],
+    "permissions": [
+      "android.permission.INTERNET"
+    ],
+    "metaData": [],
+    "applicationAttributes": [],
+    "stringResources": {}
   }
 }
