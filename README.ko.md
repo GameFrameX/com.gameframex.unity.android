@@ -111,6 +111,20 @@
       "facebook_app_id": "your_facebook_app_id",
       "facebook_client_token": "your_facebook_client_token",
       "facebook_app_scheme": "fb_your_facebook_app_id"
+    },
+    "resources": {
+      "string": {
+        "facebook_app_id": {
+          "value": "your_facebook_app_id",
+          "translatable": "false"
+        }
+      },
+      "integer": {
+        "max_retry_count": "3"
+      },
+      "color": {
+        "primary": "#FF5722"
+      }
     }
   },
   "unityLibrary": {
@@ -122,7 +136,8 @@
     "permissions": [],
     "metaData": [],
     "applicationAttributes": [],
-    "stringResources": {}
+    "stringResources": {},
+    "resources": {}
   }
 }
 ```
@@ -160,9 +175,40 @@
 | `metaData` | `[{name, value}]` | name으로 중복 제거 | AndroidManifest `<application>` 아래의 `<meta-data>` 항목 |
 | `applicationAttributes` | `[{name, value}]` | 이름으로 중복 제거 | AndroidManifest `<application>` 태그의 속성 (`android:` 접두사 없음) |
 | `signingConfig` | `{storeFile, storePassword, keyAlias, keyPassword}` | 나중에 쓴 값 우선 | 서명 설정, `signingConfigs.release` 및 `buildTypes.release`에 주입 |
-| `stringResources` | `{key: value}` | 키별로 나중에 쓴 값 우선 | string 리소스, `res/values/strings.xml`에 주입 |
+| `stringResources` | `{key: value}` | 키별로 나중에 쓴 값 우선 | (레거시) string 리소스, `res/values/strings.xml`에 주입. 자동으로 `resources.string`에 병합 |
+| `resources` | `{type: {key: value/object}}` | type별로 그룹화, 각 그룹 내에서 키별로 나중에 쓴 값 우선 | 멀티타입 values 리소스, `res/values/strings.xml`에 주입. 아래 '리소스 값 형식' 참조 |
 
 ## 설정 참조
+
+### 리소스 값 형식
+
+`resources` 필드는 중첩 딕셔너리를 사용합니다: 외부 키 = XML 요소 타입, 내부 키 = 리소스 이름, 내부 값 = 텍스트 또는 객체.
+
+**단순 문자열 값** (추가 XML 속성 없음):
+```json
+"resources": {
+  "string": { "app_name": "My App" },
+  "integer": { "max_retry_count": "3" }
+}
+```
+출력: `<string name="app_name">My App</string>` 및 `<integer name="max_retry_count">3</integer>`
+
+**객체 값** (추가 XML 속성 포함):
+```json
+"resources": {
+  "string": {
+    "facebook_app_id": {
+      "value": "724358863922328",
+      "translatable": "false"
+    }
+  }
+}
+```
+출력: `<string name="facebook_app_id" translatable="false">724358863922328</string>`
+
+**지원 리소스 타입**: `string`, `integer`, `bool`, `color`, `dimen` (및 기타 XML 요소 타입 - 태그 이름이 직접 사용됨).
+
+**하위 호환성**: `stringResources`는 자동으로 `resources.string`에 병합됩니다. 동일한 키가 양쪽에 선언된 경우 `resources`가 우선합니다.
 
 ### stringResources 자주 사용하는 Key
 

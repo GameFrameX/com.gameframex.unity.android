@@ -111,6 +111,20 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
       "facebook_app_id": "your_facebook_app_id",
       "facebook_client_token": "your_facebook_client_token",
       "facebook_app_scheme": "fb_your_facebook_app_id"
+    },
+    "resources": {
+      "string": {
+        "facebook_app_id": {
+          "value": "your_facebook_app_id",
+          "translatable": "false"
+        }
+      },
+      "integer": {
+        "max_retry_count": "3"
+      },
+      "color": {
+        "primary": "#FF5722"
+      }
     }
   },
   "unityLibrary": {
@@ -122,7 +136,8 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
     "permissions": [],
     "metaData": [],
     "applicationAttributes": [],
-    "stringResources": {}
+    "stringResources": {},
+    "resources": {}
   }
 }
 ```
@@ -160,9 +175,40 @@ All fields are optional. You can place multiple config files — contents are au
 | `metaData` | `[{name, value}]` | Deduplicate by name | AndroidManifest `<meta-data>` entries under `<application>` |
 | `applicationAttributes` | `[{name, value}]` | Deduplicate by name | Attributes on the `<application>` tag (without `android:` prefix) |
 | `signingConfig` | `{storeFile, storePassword, keyAlias, keyPassword}` | Last-writer-wins | Signing config for `signingConfigs.release` and `buildTypes.release` |
-| `stringResources` | `{key: value}` | Per-key last-writer-wins | String resources injected into `res/values/strings.xml` |
+| `stringResources` | `{key: value}` | Per-key last-writer-wins | (Legacy) String resources injected into `res/values/strings.xml`. Automatically merged into `resources.string` |
+| `resources` | `{type: {key: value/object}}` | Per-type, per-key last-writer-wins | Multi-type values resources injected into `res/values/strings.xml`. See [Resource Value Format](#resource-value-format) |
 
 ## Configuration Reference
+
+### Resource Value Format
+
+The `resources` field uses a nested dictionary: outer key = XML element type, inner key = resource name, inner value = text or object.
+
+**Simple string value** (no extra XML attributes):
+```json
+"resources": {
+  "string": { "app_name": "My App" },
+  "integer": { "max_retry_count": "3" }
+}
+```
+Produces: `<string name="app_name">My App</string>` and `<integer name="max_retry_count">3</integer>`
+
+**Object value** (with extra XML attributes):
+```json
+"resources": {
+  "string": {
+    "facebook_app_id": {
+      "value": "724358863922328",
+      "translatable": "false"
+    }
+  }
+}
+```
+Produces: `<string name="facebook_app_id" translatable="false">724358863922328</string>`
+
+**Supported resource types**: `string`, `integer`, `bool`, `color`, `dimen` (and any other XML element type — the tag name is used directly).
+
+**Backward compatibility**: `stringResources` is automatically merged into `resources.string`. If both declare the same key, `resources` takes precedence.
 
 ### stringResources Common Keys
 

@@ -111,6 +111,20 @@
       "facebook_app_id": "your_facebook_app_id",
       "facebook_client_token": "your_facebook_client_token",
       "facebook_app_scheme": "fb_your_facebook_app_id"
+    },
+    "resources": {
+      "string": {
+        "facebook_app_id": {
+          "value": "your_facebook_app_id",
+          "translatable": "false"
+        }
+      },
+      "integer": {
+        "max_retry_count": "3"
+      },
+      "color": {
+        "primary": "#FF5722"
+      }
     }
   },
   "unityLibrary": {
@@ -122,7 +136,8 @@
     "permissions": [],
     "metaData": [],
     "applicationAttributes": [],
-    "stringResources": {}
+    "stringResources": {},
+    "resources": {}
   }
 }
 ```
@@ -160,9 +175,40 @@
 | `metaData` | `[{name, value}]` | 按 name 去重 | AndroidManifest `<application>` 下的 `<meta-data>` 條目 |
 | `applicationAttributes` | `[{name, value}]` | 按名稱去重 | AndroidManifest `<application>` 標籤上的屬性（不含 `android:` 前綴） |
 | `signingConfig` | `{storeFile, storePassword, keyAlias, keyPassword}` | 後寫覆蓋 | 簽名配置，注入到 `signingConfigs.release` 和 `buildTypes.release` |
-| `stringResources` | `{key: value}` | 按 key 後寫覆蓋 | string 資源，注入到 `res/values/strings.xml` |
+| `stringResources` | `{key: value}` | 按 key 後寫覆蓋 | （舊版）string 資源，注入到 `res/values/strings.xml`。自動合併到 `resources.string` |
+| `resources` | `{type: {key: value/object}}` | 按 type 分組，每組內按 key 後寫覆蓋 | 多型別 values 資源，注入到 `res/values/strings.xml`。參見下方「資源值格式」 |
 
 ## 配置參考
+
+### 資源值格式
+
+`resources` 欄位使用嵌套字典：外層 key = XML 元素型別，內層 key = 資源名，內層 value = 文字或物件。
+
+**純字串值**（無額外 XML 屬性）：
+```json
+"resources": {
+  "string": { "app_name": "My App" },
+  "integer": { "max_retry_count": "3" }
+}
+```
+產出：`<string name="app_name">My App</string>` 和 `<integer name="max_retry_count">3</integer>`
+
+**物件值**（帶額外 XML 屬性）：
+```json
+"resources": {
+  "string": {
+    "facebook_app_id": {
+      "value": "724358863922328",
+      "translatable": "false"
+    }
+  }
+}
+```
+產出：`<string name="facebook_app_id" translatable="false">724358863922328</string>`
+
+**支援的資源型別**：`string`、`integer`、`bool`、`color`、`dimen`（以及其他 XML 元素型別 — 標籤名直接使用）。
+
+**向後相容**：`stringResources` 會自動合併到 `resources.string`。如果兩者宣告了相同的 key，`resources` 優先。
 
 ### stringResources 常用 Key
 

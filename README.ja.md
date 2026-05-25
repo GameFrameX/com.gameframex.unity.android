@@ -111,6 +111,20 @@
       "facebook_app_id": "your_facebook_app_id",
       "facebook_client_token": "your_facebook_client_token",
       "facebook_app_scheme": "fb_your_facebook_app_id"
+    },
+    "resources": {
+      "string": {
+        "facebook_app_id": {
+          "value": "your_facebook_app_id",
+          "translatable": "false"
+        }
+      },
+      "integer": {
+        "max_retry_count": "3"
+      },
+      "color": {
+        "primary": "#FF5722"
+      }
     }
   },
   "unityLibrary": {
@@ -122,7 +136,8 @@
     "permissions": [],
     "metaData": [],
     "applicationAttributes": [],
-    "stringResources": {}
+    "stringResources": {},
+    "resources": {}
   }
 }
 ```
@@ -160,9 +175,40 @@
 | `metaData` | `[{name, value}]` | name で重複排除 | AndroidManifest `<application>` 下の `<meta-data>` エントリ |
 | `applicationAttributes` | `[{name, value}]` | 名前で重複排除 | AndroidManifest `<application>` タグの属性（`android:` プレフィックスなし） |
 | `signingConfig` | `{storeFile, storePassword, keyAlias, keyPassword}` | 後勝ち | 署名設定、`signingConfigs.release` と `buildTypes.release` に注入 |
-| `stringResources` | `{key: value}` | キーごとに後勝ち | string リソース、`res/values/strings.xml` に注入 |
+| `stringResources` | `{key: value}` | キーごとに後勝ち | （旧版）string リソース、`res/values/strings.xml` に注入。自動的に `resources.string` にマージ |
+| `resources` | `{type: {key: value/object}}` | type ごとにグループ化、各グループ内でキーごとに後勝ち | マルチタイプ values リソース、`res/values/strings.xml` に注入。下記「リソース値フォーマット」を参照 |
 
 ## 設定リファレンス
+
+### リソース値フォーマット
+
+`resources` フィールドはネストされた辞書を使用します：外側のキー = XML 要素タイプ、内側のキー = リソース名、内側の値 = テキストまたはオブジェクト。
+
+**単純な文字列値**（追加の XML 属性なし）：
+```json
+"resources": {
+  "string": { "app_name": "My App" },
+  "integer": { "max_retry_count": "3" }
+}
+```
+出力：`<string name="app_name">My App</string>` および `<integer name="max_retry_count">3</integer>`
+
+**オブジェクト値**（追加の XML 属性あり）：
+```json
+"resources": {
+  "string": {
+    "facebook_app_id": {
+      "value": "724358863922328",
+      "translatable": "false"
+    }
+  }
+}
+```
+出力：`<string name="facebook_app_id" translatable="false">724358863922328</string>`
+
+**対応リソースタイプ**：`string`、`integer`、`bool`、`color`、`dimen`（その他の XML 要素タイプも直接使用可能）。
+
+**後方互換性**：`stringResources` は自動的に `resources.string` にマージされます。同じキーが両方に宣言されている場合、`resources` が優先されます。
 
 ### stringResources よく使う Key
 
