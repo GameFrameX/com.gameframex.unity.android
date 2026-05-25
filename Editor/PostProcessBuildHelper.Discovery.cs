@@ -108,6 +108,7 @@ namespace GameFrameX.Android.Editor
             MergePermissions(target, source, seenPerms);
             MergeMetaData(target, source, seenMeta);
             MergeApplicationAttributes(target, source, seenAppAttrs);
+            MergeStringResources(target, source);
             MergeSdkVersions(target, source);
         }
 
@@ -282,6 +283,20 @@ namespace GameFrameX.Android.Editor
                         name = attr["name"] as string,
                         value = attr["value"] as string,
                     });
+                }
+            }
+
+            if (table["stringResources"] is System.Collections.Hashtable stringRes)
+            {
+                foreach (System.Collections.DictionaryEntry kvp in stringRes)
+                {
+                    var key = kvp.Key as string;
+                    if (string.IsNullOrEmpty(key))
+                    {
+                        continue;
+                    }
+
+                    module.stringResources[key] = kvp.Value as string;
                 }
             }
 
@@ -489,6 +504,19 @@ namespace GameFrameX.Android.Editor
             }
         }
 
+        private static void MergeStringResources(AndroidBuildConfigModule target, AndroidBuildConfigModule source)
+        {
+            if (source.stringResources == null)
+            {
+                return;
+            }
+
+            foreach (var kvp in source.stringResources)
+            {
+                target.stringResources[kvp.Key] = kvp.Value;
+            }
+        }
+
         private static void MergeSdkVersions(AndroidBuildConfigModule target, AndroidBuildConfigModule source)
         {
             MergeSdkVersionMax(target, source, nameof(AndroidBuildConfigModule.compileSdkVersion));
@@ -582,7 +610,8 @@ namespace GameFrameX.Android.Editor
                 LogHelper.Log("  launcher: " +
                               merged.launcher.dependencies.Count + " dep(s), " +
                               merged.launcher.permissions.Count + " perm(s), " +
-                              merged.launcher.metaData.Count + " meta-data(s)" +
+                              merged.launcher.metaData.Count + " meta-data(s), " +
+                              merged.launcher.stringResources.Count + " string-res(s)" +
                               LogSdkVersions(merged.launcher));
             }
 
@@ -591,7 +620,8 @@ namespace GameFrameX.Android.Editor
                 LogHelper.Log("  unityLibrary: " +
                               merged.unityLibrary.dependencies.Count + " dep(s), " +
                               merged.unityLibrary.permissions.Count + " perm(s), " +
-                              merged.unityLibrary.metaData.Count + " meta-data(s)" +
+                              merged.unityLibrary.metaData.Count + " meta-data(s), " +
+                              merged.unityLibrary.stringResources.Count + " string-res(s)" +
                               LogSdkVersions(merged.unityLibrary));
             }
 

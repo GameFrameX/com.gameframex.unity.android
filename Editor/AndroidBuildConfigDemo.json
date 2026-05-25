@@ -37,6 +37,11 @@
       "storePassword": "your_store_password",
       "keyAlias": "release",
       "keyPassword": "your_key_password"
+    },
+    "stringResources": {
+      "facebook_app_id": "724358863922328",
+      "facebook_app_scheme": "fb724358863922328",
+      "facebook_client_token": "5d534e3ed23cc4769c7e544d0d668dfb"
     }
   },
   "unityLibrary": {

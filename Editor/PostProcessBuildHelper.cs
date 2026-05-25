@@ -73,6 +73,7 @@ namespace GameFrameX.Android.Editor
             SafeRun("SetSigningConfig", () => SetSigningConfig(gradleRoot, config));
             SafeRun("SetBuildGradle", () => SetBuildGradle(gradleRoot, config));
             SafeRun("SetManifest", () => SetManifest(gradleRoot, config));
+            SafeRun("SetStringsXml", () => SetStringsXml(gradleRoot, config));
             SafeRun("SetGradleWrapper", () => SetGradleWrapper(gradleRoot, config));
             SafeRun("SetGradleProperties", () => SetGradleProperties(gradleRoot, config));
             SafeRun("CopyFiles", () => CopyFiles(gradleRoot, config));

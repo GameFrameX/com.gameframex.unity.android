@@ -151,6 +151,14 @@ namespace GameFrameX.Android.Editor
         public List<ApplicationAttribute> applicationAttributes = new List<ApplicationAttribute>();
 
         /// <summary>
+        /// Android string 资源映射，注入到 res/values/strings.xml。key 为资源 name，value 为文本值。合并时后写覆盖。
+        /// </summary>
+        /// <remarks>
+        /// Android string resource map, injected into res/values/strings.xml. Key = resource name, value = text. Merged by last-writer-wins.
+        /// </remarks>
+        public Dictionary<string, string> stringResources = new Dictionary<string, string>();
+
+        /// <summary>
         /// 编译 SDK 版本，注入到 android {} 块。合并时取最大值。
         /// </summary>
         /// <remarks>
