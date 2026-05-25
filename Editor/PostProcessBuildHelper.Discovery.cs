@@ -292,13 +292,9 @@ namespace GameFrameX.Android.Editor
                 return null;
             }
 
-            var resolvedStoreFile = Path.IsPathRooted(storeFile)
-                ? storeFile
-                : Path.GetFullPath(Path.Combine(configDir, storeFile));
-
             return new SigningConfig
             {
-                storeFile = resolvedStoreFile,
+                storeFile = storeFile,
                 storePassword = signingObj["storePassword"] as string,
                 keyAlias = signingObj["keyAlias"] as string,
                 keyPassword = signingObj["keyPassword"] as string,
