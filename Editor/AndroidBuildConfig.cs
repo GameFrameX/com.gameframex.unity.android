@@ -169,6 +169,22 @@ namespace GameFrameX.Android.Editor
         public Dictionary<string, string> stringResources = new Dictionary<string, string>();
 
         /// <summary>
+        /// 通用 Android values 资源映射，注入到 res/values/strings.xml。
+        /// 外层 key 为资源类型名（对应 XML 元素标签名，如 string、integer、bool、color、dimen），
+        /// 内层为 KV 字典（name 属性 → ResourceValue）。
+        /// 合并时按 type 分组，每组内按 key 后写覆盖。
+        /// stringResources 解析后自动合并到 resources["string"]。
+        /// </summary>
+        /// <remarks>
+        /// Generic Android values resource map, injected into res/values/strings.xml.
+        /// Outer key = resource type name (XML element tag name, e.g. string, integer, bool, color, dimen),
+        /// inner = KV map (name attribute → ResourceValue).
+        /// Merged per-type by last-writer-wins.
+        /// stringResources is automatically merged into resources["string"] during parsing.
+        /// </remarks>
+        public Dictionary<string, Dictionary<string, ResourceValue>> resources = new Dictionary<string, Dictionary<string, ResourceValue>>();
+
+        /// <summary>
         /// 编译 SDK 版本，注入到 android {} 块。合并时取最大值。
         /// </summary>
         /// <remarks>
@@ -405,6 +421,34 @@ namespace GameFrameX.Android.Editor
         /// After build, the contents of this subdirectory are moved into the asset pack module.
         /// </remarks>
         public string streamingAssetsPath;
+    }
+
+    /// <summary>
+    /// Android values 资源的值，支持纯文本或带额外 XML 属性的对象格式。
+    /// 纯字符串时 text 为该字符串、attributes 为空；对象格式时 attributes 包含额外 XML 属性。
+    /// </summary>
+    /// <remarks>
+    /// Value for an Android values resource, supporting plain text or object format with extra XML attributes.
+    /// For plain strings, text holds the value and attributes is empty. For objects, attributes holds extra XML attributes.
+    /// </remarks>
+    [Serializable]
+    internal class ResourceValue
+    {
+        /// <summary>
+        /// 资源的文本内容。
+        /// </summary>
+        /// <remarks>
+        /// Text content of the resource element.
+        /// </remarks>
+        public string text = "";
+
+        /// <summary>
+        /// 额外的 XML 属性（如 translatable="false"），不含 name 属性。
+        /// </summary>
+        /// <remarks>
+        /// Extra XML attributes (e.g. translatable="false"), excluding the name attribute.
+        /// </remarks>
+        public Dictionary<string, string> attributes = new Dictionary<string, string>();
     }
 }
 

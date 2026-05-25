@@ -109,7 +109,8 @@ namespace GameFrameX.Android.Editor
             MergePermissions(target, source, seenPerms);
             MergeMetaData(target, source, seenMeta);
             MergeApplicationAttributes(target, source, seenAppAttrs);
-            MergeStringResources(target, source);
+            MergeStringResourcesIntoResources(target, source);
+            MergeResources(target, source);
             MergeSdkVersions(target, source);
         }
 
@@ -328,7 +329,69 @@ namespace GameFrameX.Android.Editor
                 }
             }
 
+            if (table["resources"] is System.Collections.Hashtable resourcesTable)
+            {
+                foreach (System.Collections.DictionaryEntry typeEntry in resourcesTable)
+                {
+                    var typeName = typeEntry.Key as string;
+                    if (string.IsNullOrEmpty(typeName) || !(typeEntry.Value is System.Collections.Hashtable typeRes))
+                    {
+                        continue;
+                    }
+
+                    if (!module.resources.ContainsKey(typeName))
+                    {
+                        module.resources[typeName] = new Dictionary<string, ResourceValue>();
+                    }
+
+                    foreach (System.Collections.DictionaryEntry resEntry in typeRes)
+                    {
+                        var resName = resEntry.Key as string;
+                        if (string.IsNullOrEmpty(resName))
+                        {
+                            continue;
+                        }
+
+                        module.resources[typeName][resName] = ParseResourceValue(resEntry.Value);
+                    }
+                }
+            }
+
             return module;
+        }
+
+        private static ResourceValue ParseResourceValue(object rawValue)
+        {
+            if (rawValue is string s)
+            {
+                return new ResourceValue { text = s };
+            }
+
+            if (rawValue is System.Collections.Hashtable ht)
+            {
+                var rv = new ResourceValue();
+                foreach (System.Collections.DictionaryEntry de in ht)
+                {
+                    var attrKey = de.Key as string;
+                    if (string.IsNullOrEmpty(attrKey))
+                    {
+                        continue;
+                    }
+
+                    if (attrKey == "value")
+                    {
+                        rv.text = de.Value as string;
+                    }
+                    else
+                    {
+                        rv.attributes[attrKey] = de.Value as string;
+                    }
+                }
+
+                return rv;
+            }
+
+            return new ResourceValue { text = rawValue?.ToString() ?? "" };
         }
 
         private static SigningConfig ParseSigningConfig(System.Collections.Hashtable table, string configDir)
@@ -532,16 +595,47 @@ namespace GameFrameX.Android.Editor
             }
         }
 
-        private static void MergeStringResources(AndroidBuildConfigModule target, AndroidBuildConfigModule source)
+        private static void MergeStringResourcesIntoResources(AndroidBuildConfigModule target, AndroidBuildConfigModule source)
         {
-            if (source.stringResources == null)
+            if (source.stringResources == null || source.stringResources.Count == 0)
             {
                 return;
             }
 
+            if (!target.resources.ContainsKey("string"))
+            {
+                target.resources["string"] = new Dictionary<string, ResourceValue>();
+            }
+
             foreach (var kvp in source.stringResources)
             {
-                target.stringResources[kvp.Key] = kvp.Value;
+                target.resources["string"][kvp.Key] = new ResourceValue { text = kvp.Value };
+            }
+        }
+
+        private static void MergeResources(AndroidBuildConfigModule target, AndroidBuildConfigModule source)
+        {
+            if (source.resources == null || source.resources.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var typeKvp in source.resources)
+            {
+                if (string.IsNullOrEmpty(typeKvp.Key) || typeKvp.Value == null)
+                {
+                    continue;
+                }
+
+                if (!target.resources.ContainsKey(typeKvp.Key))
+                {
+                    target.resources[typeKvp.Key] = new Dictionary<string, ResourceValue>();
+                }
+
+                foreach (var resKvp in typeKvp.Value)
+                {
+                    target.resources[typeKvp.Key][resKvp.Key] = resKvp.Value;
+                }
             }
         }
 
@@ -667,7 +761,7 @@ namespace GameFrameX.Android.Editor
                               merged.launcher.dependencies.Count + " dep(s), " +
                               merged.launcher.permissions.Count + " perm(s), " +
                               merged.launcher.metaData.Count + " meta-data(s), " +
-                              merged.launcher.stringResources.Count + " string-res(s)" +
+                              LogResourceCount(merged.launcher) +
                               LogSdkVersions(merged.launcher));
             }
 
@@ -677,7 +771,7 @@ namespace GameFrameX.Android.Editor
                               merged.unityLibrary.dependencies.Count + " dep(s), " +
                               merged.unityLibrary.permissions.Count + " perm(s), " +
                               merged.unityLibrary.metaData.Count + " meta-data(s), " +
-                              merged.unityLibrary.stringResources.Count + " string-res(s)" +
+                              LogResourceCount(merged.unityLibrary) +
                               LogSdkVersions(merged.unityLibrary));
             }
 
@@ -690,6 +784,22 @@ namespace GameFrameX.Android.Editor
                                   " streamingAssetsPath=" + pack.streamingAssetsPath);
                 }
             }
+        }
+
+        internal static string LogResourceCount(AndroidBuildConfigModule module)
+        {
+            if (module.resources == null || module.resources.Count == 0)
+            {
+                return "0 resource-type(s)";
+            }
+
+            var total = 0;
+            foreach (var typeKvp in module.resources)
+            {
+                total += typeKvp.Value.Count;
+            }
+
+            return module.resources.Count + " resource-type(s)/" + total + " res-value(s)";
         }
 
         internal static string LogSdkVersions(AndroidBuildConfigModule module)
