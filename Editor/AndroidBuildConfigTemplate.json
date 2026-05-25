@@ -53,6 +53,7 @@
   "directoryCopies": {
     "jniLibs": "launcher/jniLibs"
   },
+  "assetPacksEnabled": false,
   "assetPacks": [
     {
       "name": "YourAssetPackName",

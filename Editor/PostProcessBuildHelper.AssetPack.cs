@@ -24,6 +24,11 @@ namespace GameFrameX.Android.Editor
         /// <param name="config">合并后的配置 / Merged config</param>
         private static void SetAssetPacks(string gradleRoot, AndroidBuildConfigFile config)
         {
+            if (!config.assetPacksEnabled)
+            {
+                return;
+            }
+
             if (config.assetPacks == null || config.assetPacks.Count == 0)
             {
                 return;

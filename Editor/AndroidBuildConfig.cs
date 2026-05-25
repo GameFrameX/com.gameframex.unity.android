@@ -75,6 +75,14 @@ namespace GameFrameX.Android.Editor
         public Dictionary<string, string> directoryCopies = new Dictionary<string, string>();
 
         /// <summary>
+        /// 是否启用 Asset Pack 功能，默认关闭。
+        /// </summary>
+        /// <remarks>
+        /// Whether to enable Asset Pack feature, disabled by default.
+        /// </remarks>
+        public bool assetPacksEnabled;
+
+        /// <summary>
         /// Asset Pack 配置列表，用于 Google Play Asset Delivery。
         /// 每个 Asset Pack 对应一个独立的 Gradle 子项目模块。
         /// </summary>

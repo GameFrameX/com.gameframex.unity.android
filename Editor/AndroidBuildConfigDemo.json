@@ -61,6 +61,7 @@
   "directoryCopies": {
     "jniLibs": "launcher/jniLibs"
   },
+  "assetPacksEnabled": true,
   "assetPacks": [
     {
       "name": "base-assets",

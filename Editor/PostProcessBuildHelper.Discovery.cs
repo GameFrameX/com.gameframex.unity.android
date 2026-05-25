@@ -83,6 +83,10 @@ namespace GameFrameX.Android.Editor
                 MergeGradleWrapper(merged, config);
                 MergeGradleProperties(merged, config);
                 MergeFileCopies(merged, config);
+                if (config.assetPacksEnabled)
+                {
+                    merged.assetPacksEnabled = true;
+                }
                 MergeAssetPacks(merged, config, seenAssetPackNames);
                 MergeModule(merged.launcher, config.launcher, launcherDeps, launcherPerms, launcherMeta, launcherAppAttrs);
                 MergeModule(merged.unityLibrary, config.unityLibrary, libDeps, libPerms, libMeta, libAppAttrs);
@@ -185,6 +189,11 @@ namespace GameFrameX.Android.Editor
                             : Path.GetFullPath(Path.Combine(configDir, src));
                         config.directoryCopies[resolvedSrc] = dst;
                     }
+                }
+
+                if (decoded["assetPacksEnabled"] != null)
+                {
+                    config.assetPacksEnabled = (bool)decoded["assetPacksEnabled"];
                 }
 
                 if (decoded["assetPacks"] is System.Collections.ArrayList assetPacksList)
