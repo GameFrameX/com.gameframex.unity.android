@@ -35,6 +35,7 @@ namespace GameFrameX.Android.Editor
             }
 
             InjectAssetPackIncludes(gradleRoot, config.assetPacks);
+            InjectAssetPacksToLauncher(gradleRoot, config.assetPacks);
         }
 
         /// <summary>
@@ -97,15 +98,6 @@ namespace GameFrameX.Android.Editor
             var buildGradleContent = GenerateAssetPackBuildGradle(pack.name, pack.deliveryType);
             File.WriteAllText(buildGradlePath, buildGradleContent);
             LogHelper.Log("+ AssetPack '" + pack.name + "': created build.gradle");
-
-            var manifestDir = Path.Combine(packDir, "src", "main");
-            var manifestPath = Path.Combine(manifestDir, "AndroidManifest.xml");
-            if (!File.Exists(manifestPath))
-            {
-                var manifestContent = GenerateAssetPackManifest(pack.name);
-                File.WriteAllText(manifestPath, manifestContent);
-                LogHelper.Log("+ AssetPack '" + pack.name + "': created AndroidManifest.xml");
-            }
         }
 
         /// <summary>
@@ -131,22 +123,7 @@ namespace GameFrameX.Android.Editor
         }
 
         /// <summary>
-        /// 生成 Asset Pack 的 AndroidManifest.xml 内容。
-        /// </summary>
-        /// <remarks>
-        /// Generates the minimal AndroidManifest.xml content for an asset pack module.
-        /// </remarks>
-        private static string GenerateAssetPackManifest(string packName)
-        {
-            return
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
-                "    package=\"com.unity3d." + packName + "\">\n" +
-                "</manifest>\n";
-        }
-
-        /// <summary>
-        /// 向 settings.gradle 末尾追加 Asset Pack 的 include 语句。
+        /// 向 launcher/build.gradle 末尾追加 assetPacks 声明。
         /// </summary>
         /// <remarks>
         /// Appends asset pack include statements to the end of settings.gradle.
@@ -181,6 +158,45 @@ namespace GameFrameX.Android.Editor
             {
                 File.WriteAllLines(filePath, lines);
             }
+        }
+
+        /// <summary>
+        /// 向 launcher/build.gradle 末尾追加 assetPacks 声明。
+        /// </summary>
+        /// <remarks>
+        /// Appends assetPacks declaration to the end of launcher/build.gradle.
+        /// </remarks>
+        private static void InjectAssetPacksToLauncher(string gradleRoot, List<AssetPackConfig> packs)
+        {
+            var filePath = FindFile(gradleRoot, Path.Combine("launcher", "build.gradle"));
+            if (string.IsNullOrEmpty(filePath))
+            {
+                LogHelper.Warning("Could not find launcher/build.gradle for assetPacks injection");
+                return;
+            }
+
+            var lines = new List<string>(File.ReadAllLines(filePath));
+
+            var packRefs = new List<string>();
+            foreach (var pack in packs)
+            {
+                packRefs.Add("':" + pack.name + "'");
+            }
+
+            var assetPacksLine = "assetPacks " + string.Join(", ", packRefs);
+
+            if (ContainsLine(lines, "assetPacks"))
+            {
+                return;
+            }
+
+            lines.Add("");
+            lines.Add("android {");
+            lines.Add("    " + assetPacksLine);
+            lines.Add("}");
+
+            File.WriteAllLines(filePath, lines);
+            LogHelper.Log("+ launcher/build.gradle: added android { " + assetPacksLine + " }");
         }
     }
 }
