@@ -89,6 +89,18 @@
     "permissions": [ "android.permission.INTERNET" ],
     "metaData": []
   },
+  "assetPacks": [
+    {
+      "name": "additional_assets",
+      "deliveryType": "install-time",
+      "streamingAssetsPath": "AdditionalAssets"
+    },
+    {
+      "name": "extra_assets",
+      "deliveryType": "fast-follow",
+      "streamingAssetsPath": "ExtraAssets"
+    }
+  ],
   "fileCopies": {
     "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
   },
@@ -108,6 +120,11 @@
 - **`applicationId`**：应用标识符，注入到 `defaultConfig {}`，合并策略为后写覆盖
 - **`versionName`**：版本名称，注入到 `defaultConfig {}`，合并策略为后写覆盖
 - **`signingConfig`**：签名配置（storeFile/storePassword/keyAlias/keyPassword），注入到 `signingConfigs {}` 和 `buildTypes.release {}`。storeFile 支持相对路径和绝对路径
+- **`assetPacks`**：Google Play Asset Delivery 配置。将 StreamingAssets 子目录映射为独立的 Gradle asset pack 模块。每个条目包含：
+  - `name`：asset pack 模块名称（作为 Gradle 子项目名称）
+  - `deliveryType`：分发模式 — `install-time`（随应用一起分发）、`fast-follow`（安装后自动下载）或 `on-demand`（按需下载）
+  - `streamingAssetsPath`：Unity StreamingAssets 文件夹下的子目录名称，映射到该 asset pack 中
+  - 未在 `assetPacks` 中列出的 StreamingAssets 子目录将保留在原始位置
 - **`fileCopies`**：键值对映射（源路径 → 目标路径），用于复制文件到 Gradle 项目。支持相对路径和绝对路径
 - **`directoryCopies`**：键值对映射（源路径 → 目标路径），用于复制目录到 Gradle 项目。支持相对路径和绝对路径
 

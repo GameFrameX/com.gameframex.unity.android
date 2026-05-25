@@ -89,6 +89,18 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
     "permissions": [ "android.permission.INTERNET" ],
     "metaData": []
   },
+  "assetPacks": [
+    {
+      "name": "additional_assets",
+      "deliveryType": "install-time",
+      "streamingAssetsPath": "AdditionalAssets"
+    },
+    {
+      "name": "extra_assets",
+      "deliveryType": "fast-follow",
+      "streamingAssetsPath": "ExtraAssets"
+    }
+  ],
   "fileCopies": {
     "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
   },
@@ -108,6 +120,11 @@ All fields are optional. You can place multiple config files — contents are au
 - **`applicationId`**: Application identifier injected into `defaultConfig {}`, merged by last-writer-wins
 - **`versionName`**: Version name string injected into `defaultConfig {}`, merged by last-writer-wins
 - **`signingConfig`**: Signing configuration (storeFile/storePassword/keyAlias/keyPassword), injected into `signingConfigs {}` and `buildTypes.release {}`. storeFile supports relative and absolute paths
+- **`assetPacks`**: Google Play Asset Delivery configuration. Maps StreamingAssets subdirectories to independent Gradle asset pack modules. Each entry contains:
+  - `name`: Asset pack module name (used as the Gradle sub-project name)
+  - `deliveryType`: Delivery mode — `install-time` (delivered with the app), `fast-follow` (downloaded shortly after install), or `on-demand` (downloaded when requested)
+  - `streamingAssetsPath`: Subdirectory name under Unity's StreamingAssets folder to map into this asset pack
+  - StreamingAssets subdirectories not listed in `assetPacks` remain in their original location
 - **`fileCopies`**: Key-value map (source → destination) for copying files into the Gradle project. Supports relative and absolute paths
 - **`directoryCopies`**: Key-value map (source → destination) for copying directories into the Gradle project. Supports relative and absolute paths
 

@@ -89,6 +89,18 @@
     "permissions": [ "android.permission.INTERNET" ],
     "metaData": []
   },
+  "assetPacks": [
+    {
+      "name": "additional_assets",
+      "deliveryType": "install-time",
+      "streamingAssetsPath": "AdditionalAssets"
+    },
+    {
+      "name": "extra_assets",
+      "deliveryType": "fast-follow",
+      "streamingAssetsPath": "ExtraAssets"
+    }
+  ],
   "fileCopies": {
     "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
   },
@@ -108,6 +120,11 @@
 - **`applicationId`**: アプリケーション識別子、`defaultConfig {}` に注入、マージは後勝ち
 - **`versionName`**: バージョン名、`defaultConfig {}` に注入、マージは後勝ち
 - **`signingConfig`**: 署名設定（storeFile/storePassword/keyAlias/keyPassword）、`signingConfigs {}` と `buildTypes.release {}` に注入。storeFile は相対パスと絶対パスに対応
+- **`assetPacks`**: Google Play Asset Delivery 設定。StreamingAssets のサブディレクトリを独立した Gradle asset pack モジュールにマッピングします。各エントリには以下のフィールドが含まれます：
+  - `name`: asset pack モジュール名（Gradle サブプロジェクト名として使用）
+  - `deliveryType`: 配信モード — `install-time`（アプリと一緒に配信）、`fast-follow`（インストール後に自動ダウンロード）、または `on-demand`（リクエスト時にダウンロード）
+  - `streamingAssetsPath`: Unity の StreamingAssets フォルダ以下のサブディレクトリ名。この asset pack にマッピングされます
+  - `assetPacks` にリストされていない StreamingAssets サブディレクトリは元の位置に残ります
 - **`fileCopies`**: キーと値のマッピング（ソースパス → コピー先パス）、Gradle プロジェクトにファイルをコピー。相対パスと絶対パスに対応
 - **`directoryCopies`**: キーと値のマッピング（ソースパス → コピー先パス）、Gradle プロジェクトにディレクトリをコピー。相対パスと絶対パスに対応
 

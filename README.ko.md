@@ -89,6 +89,18 @@
     "permissions": [ "android.permission.INTERNET" ],
     "metaData": []
   },
+  "assetPacks": [
+    {
+      "name": "additional_assets",
+      "deliveryType": "install-time",
+      "streamingAssetsPath": "AdditionalAssets"
+    },
+    {
+      "name": "extra_assets",
+      "deliveryType": "fast-follow",
+      "streamingAssetsPath": "ExtraAssets"
+    }
+  ],
   "fileCopies": {
     "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
   },
@@ -108,6 +120,11 @@
 - **`applicationId`**: 앱 식별자, `defaultConfig {}`에 주입, 병합은 마지막 작성자 우선
 - **`versionName`**: 버전 이름, `defaultConfig {}`에 주입, 병합은 마지막 작성자 우선
 - **`signingConfig`**: 서명 설정 (storeFile/storePassword/keyAlias/keyPassword), `signingConfigs {}` 및 `buildTypes.release {}`에 주입. storeFile은 상대 경로 및 절대 경로 지원
+- **`assetPacks`**: Google Play Asset Delivery 설정. StreamingAssets 하위 디렉토리를 독립적인 Gradle asset pack 모듈에 매핑합니다. 각 항목은 다음 필드를 포함합니다:
+  - `name`: asset pack 모듈 이름 (Gradle 하위 프로젝트 이름으로 사용)
+  - `deliveryType`: 전달 모드 — `install-time` (앱과 함께 전달), `fast-follow` (설치 후 자동 다운로드) 또는 `on-demand` (요청 시 다운로드)
+  - `streamingAssetsPath`: Unity의 StreamingAssets 폴더 아래 하위 디렉토리 이름. 이 asset pack에 매핑됩니다
+  - `assetPacks`에 나열되지 않은 StreamingAssets 하위 디렉토리는 원래 위치에 유지됩니다
 - **`fileCopies`**: 키-값 매핑 (소스 경로 → 대상 경로), Gradle 프로젝트에 파일 복사. 상대 경로 및 절대 경로 지원
 - **`directoryCopies`**: 키-값 매핑 (소스 경로 → 대상 경로), Gradle 프로젝트에 디렉토리 복사. 상대 경로 및 절대 경로 지원
 
