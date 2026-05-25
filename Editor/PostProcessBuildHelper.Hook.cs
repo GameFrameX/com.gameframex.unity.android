@@ -68,6 +68,12 @@ namespace GameFrameX.Android.Editor
                 LogHelper.Log("  Gradle wrapper: " + config.gradleWrapper.Count + " prop(s)");
                 LogHelper.Log("  Gradle properties: " + config.gradleProperties.Count + " prop(s)");
 
+                LogHelper.Log("  Asset packs: " + config.assetPacks.Count);
+                foreach (var pack in config.assetPacks)
+                {
+                    LogHelper.Log("    - " + pack.name + " (" + pack.deliveryType + ") <- StreamingAssets/" + pack.streamingAssetsPath);
+                }
+
                 if (config.launcher != null)
                 {
                     LogHelper.Log("  launcher: " +

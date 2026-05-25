@@ -68,6 +68,7 @@ namespace GameFrameX.Android.Editor
             LogHelper.Log("Gradle root: " + gradleRoot);
 
             SafeRun("SetSettingsGradle", () => SetSettingsGradle(gradleRoot, config));
+            SafeRun("SetAssetPacks", () => SetAssetPacks(gradleRoot, config));
             SafeRun("SetAndroidBlock", () => SetAndroidBlock(gradleRoot, config));
             SafeRun("SetSigningConfig", () => SetSigningConfig(gradleRoot, config));
             SafeRun("SetBuildGradle", () => SetBuildGradle(gradleRoot, config));

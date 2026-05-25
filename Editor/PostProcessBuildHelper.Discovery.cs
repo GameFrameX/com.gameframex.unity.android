@@ -56,6 +56,7 @@ namespace GameFrameX.Android.Editor
                 unityLibrary = new AndroidBuildConfigModule(),
             };
             var seenRepoUrls = new HashSet<string>();
+            var seenAssetPackNames = new HashSet<string>();
 
             // Per-module dedup sets
             var launcherDeps = new HashSet<string>();
@@ -82,6 +83,7 @@ namespace GameFrameX.Android.Editor
                 MergeGradleWrapper(merged, config);
                 MergeGradleProperties(merged, config);
                 MergeFileCopies(merged, config);
+                MergeAssetPacks(merged, config, seenAssetPackNames);
                 MergeModule(merged.launcher, config.launcher, launcherDeps, launcherPerms, launcherMeta, launcherAppAttrs);
                 MergeModule(merged.unityLibrary, config.unityLibrary, libDeps, libPerms, libMeta, libAppAttrs);
             }
@@ -182,6 +184,19 @@ namespace GameFrameX.Android.Editor
                             ? src
                             : Path.GetFullPath(Path.Combine(configDir, src));
                         config.directoryCopies[resolvedSrc] = dst;
+                    }
+                }
+
+                if (decoded["assetPacks"] is System.Collections.ArrayList assetPacksList)
+                {
+                    foreach (System.Collections.Hashtable pack in assetPacksList)
+                    {
+                        config.assetPacks.Add(new AssetPackConfig
+                        {
+                            name = pack["name"] as string,
+                            deliveryType = pack["deliveryType"] as string,
+                            streamingAssetsPath = pack["streamingAssetsPath"] as string,
+                        });
                     }
                 }
 
@@ -353,6 +368,49 @@ namespace GameFrameX.Android.Editor
             }
         }
 
+        private static void MergeAssetPacks(AndroidBuildConfigFile merged, AndroidBuildConfigFile source, HashSet<string> seenNames)
+        {
+            if (source.assetPacks == null)
+            {
+                return;
+            }
+
+            foreach (var pack in source.assetPacks)
+            {
+                if (string.IsNullOrEmpty(pack.name))
+                {
+                    continue;
+                }
+
+                if (seenNames.Add(pack.name))
+                {
+                    merged.assetPacks.Add(pack);
+                }
+                else
+                {
+                    for (var i = 0; i < merged.assetPacks.Count; i++)
+                    {
+                        if (merged.assetPacks[i].name == pack.name)
+                        {
+                            if (!string.IsNullOrEmpty(pack.deliveryType))
+                            {
+                                merged.assetPacks[i] = new AssetPackConfig
+                                {
+                                    name = pack.name,
+                                    deliveryType = pack.deliveryType,
+                                    streamingAssetsPath = !string.IsNullOrEmpty(pack.streamingAssetsPath)
+                                        ? pack.streamingAssetsPath
+                                        : merged.assetPacks[i].streamingAssetsPath,
+                                };
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         private static void MergeDependencies(AndroidBuildConfigModule target, AndroidBuildConfigModule source, HashSet<string> seen)
         {
             if (source.dependencies == null)
@@ -511,7 +569,8 @@ namespace GameFrameX.Android.Editor
                           merged.gradleWrapper.Count + " gradle-wrapper prop(s), " +
                           merged.gradleProperties.Count + " gradle prop(s), " +
                           merged.fileCopies.Count + " file copy(ies), " +
-                          merged.directoryCopies.Count + " dir copy(ies)");
+                          merged.directoryCopies.Count + " dir copy(ies), " +
+                          merged.assetPacks.Count + " asset pack(s)");
 
             if (merged.launcher != null)
             {
@@ -529,6 +588,16 @@ namespace GameFrameX.Android.Editor
                               merged.unityLibrary.permissions.Count + " perm(s), " +
                               merged.unityLibrary.metaData.Count + " meta-data(s)" +
                               LogSdkVersions(merged.unityLibrary));
+            }
+
+            if (merged.assetPacks.Count > 0)
+            {
+                foreach (var pack in merged.assetPacks)
+                {
+                    LogHelper.Log("  assetPack: " + pack.name +
+                                  " deliveryType=" + pack.deliveryType +
+                                  " streamingAssetsPath=" + pack.streamingAssetsPath);
+                }
             }
         }
 

@@ -60,5 +60,17 @@
   },
   "directoryCopies": {
     "jniLibs": "launcher/jniLibs"
-  }
+  },
+  "assetPacks": [
+    {
+      "name": "base-assets",
+      "deliveryType": "install-time",
+      "streamingAssetsPath": "BaseAssets"
+    },
+    {
+      "name": "dlc-pack",
+      "deliveryType": "on-demand",
+      "streamingAssetsPath": "DLC"
+    }
+  ]
 }

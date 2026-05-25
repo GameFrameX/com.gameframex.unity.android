@@ -52,5 +52,12 @@
   },
   "directoryCopies": {
     "jniLibs": "launcher/jniLibs"
-  }
+  },
+  "assetPacks": [
+    {
+      "name": "YourAssetPackName",
+      "deliveryType": "install-time",
+      "streamingAssetsPath": "YourStreamingAssetsSubDir"
+    }
+  ]
 }

@@ -75,6 +75,16 @@ namespace GameFrameX.Android.Editor
         public Dictionary<string, string> directoryCopies = new Dictionary<string, string>();
 
         /// <summary>
+        /// Asset Pack 配置列表，用于 Google Play Asset Delivery。
+        /// 每个 Asset Pack 对应一个独立的 Gradle 子项目模块。
+        /// </summary>
+        /// <remarks>
+        /// Asset pack configurations for Google Play Asset Delivery.
+        /// Each asset pack corresponds to an independent Gradle sub-project module.
+        /// </remarks>
+        public List<AssetPackConfig> assetPacks = new List<AssetPackConfig>();
+
+        /// <summary>
         /// launcher 模块配置（Android 应用壳）。
         /// </summary>
         /// <remarks>
@@ -333,6 +343,42 @@ namespace GameFrameX.Android.Editor
         /// Key password.
         /// </remarks>
         public string keyPassword;
+    }
+
+    /// <summary>
+    /// Google Play Asset Delivery 的 Asset Pack 配置。
+    /// </summary>
+    /// <remarks>
+    /// Asset pack configuration for Google Play Asset Delivery.
+    /// </remarks>
+    [Serializable]
+    internal struct AssetPackConfig
+    {
+        /// <summary>
+        /// Asset Pack 的模块名称，同时也是 Gradle 子项目目录名。
+        /// </summary>
+        /// <remarks>
+        /// Asset pack module name, also used as the Gradle sub-project directory name.
+        /// </remarks>
+        public string name;
+
+        /// <summary>
+        /// 投递类型：install-time、fast-follow 或 on-demand。
+        /// </summary>
+        /// <remarks>
+        /// Delivery type: install-time, fast-follow, or on-demand.
+        /// </remarks>
+        public string deliveryType;
+
+        /// <summary>
+        /// Unity StreamingAssets 下的子目录名称。
+        /// 构建后，该子目录的内容会被移动到 Asset Pack 模块中。
+        /// </summary>
+        /// <remarks>
+        /// Subdirectory under Unity's StreamingAssets.
+        /// After build, the contents of this subdirectory are moved into the asset pack module.
+        /// </remarks>
+        public string streamingAssetsPath;
     }
 }
 
