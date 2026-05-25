@@ -86,6 +86,31 @@
       "google_api_key": "your_google_api_key",
       "google_crash_reporting_api_key": "your_crash_reporting_key",
       "google_storage_bucket": "your-project.appspot.com"
+    },
+    "resources": {
+      "string": {
+        "app_name": "Your App Name",
+        "facebook_app_id": {
+          "value": "your_facebook_app_id",
+          "translatable": "false"
+        },
+        "facebook_client_token": {
+          "value": "your_facebook_client_token",
+          "translatable": "false"
+        }
+      },
+      "integer": {
+        "max_retry_count": "3"
+      },
+      "bool": {
+        "enable_analytics": "true"
+      },
+      "color": {
+        "primary": "#FF5722"
+      },
+      "dimen": {
+        "spacing_large": "16dp"
+      }
     }
   },
   "unityLibrary": {
@@ -97,6 +122,7 @@
     "permissions": [],
     "metaData": [],
     "applicationAttributes": [],
-    "stringResources": {}
+    "stringResources": {},
+    "resources": {}
   }
 }

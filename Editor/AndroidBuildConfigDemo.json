@@ -135,6 +135,26 @@
       "google_api_key": "AIzaSyExampleKey",
       "google_crash_reporting_api_key": "AIzaSyCrashReportKey",
       "google_storage_bucket": "restart-life.appspot.com"
+    },
+    "resources": {
+      "string": {
+        "app_name": "Restart Life",
+        "facebook_app_id": {
+          "value": "724358863922328",
+          "translatable": "false"
+        },
+        "facebook_client_token": {
+          "value": "5d534e3ed23cc4769c7e544d0d668dfb",
+          "translatable": "false"
+        },
+        "google_app_id": {
+          "value": "1:123456789012:android:abcdef123456",
+          "translatable": "false"
+        }
+      },
+      "integer": {
+        "com_vk_sdk_AppId": "1212"
+      }
     }
   },
   "unityLibrary": {
@@ -153,6 +173,7 @@
     ],
     "metaData": [],
     "applicationAttributes": [],
-    "stringResources": {}
+    "stringResources": {},
+    "resources": {}
   }
 }
