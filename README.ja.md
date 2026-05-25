@@ -20,7 +20,7 @@
 
 ## プロジェクト概要
 
-汎用 Android ビルド自動設定システム。JSON データファイルで駆動し、プロジェクト内のすべての `AndroidBuildConfig.json` を自動検出して、ビルド時に Maven リポジトリ、Gradle 依存関係、AndroidManifest エントリを注入します。
+汎用 Android ビルド自動設定システム。JSON データファイルで駆動し、プロジェクト内のすべての `AndroidBuildConfig.json` を自動検出して、ビルド時に Maven リポジトリ、Gradle 依存関係、AndroidManifest エントリ、string リソース、ローカライゼーションを注入します。
 
 主な機能：
 
@@ -57,6 +57,32 @@
   "gradleWrapper": {
     "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
   },
+  "gradleProperties": {
+    "android.useAndroidX": "true",
+    "org.gradle.jvmargs": "-Xmx4096m"
+  },
+  "fileCopies": {
+    "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
+  },
+  "directoryCopies": {
+    "jniLibs": "launcher/jniLibs"
+  },
+  "assetPacksEnabled": true,
+  "assetPacks": [
+    {
+      "name": "additional_assets",
+      "deliveryType": "install-time",
+      "streamingAssetsPath": "AdditionalAssets"
+    }
+  ],
+  "localizedStringResources": {
+    "zh-rCN": {
+      "app_name": "我的应用"
+    },
+    "ja": {
+      "app_name": "マイアプリ"
+    }
+  },
   "launcher": {
     "compileSdkVersion": "34",
     "buildToolsVersion": "34.0.0",
@@ -71,11 +97,20 @@
     "metaData": [
       { "name": "com.example.APP_ID", "value": "your_app_id" }
     ],
+    "applicationAttributes": [
+      { "name": "usesCleartextTraffic", "value": "true" }
+    ],
     "signingConfig": {
       "storeFile": "keystore/release.jks",
       "storePassword": "your_store_password",
       "keyAlias": "release",
       "keyPassword": "your_key_password"
+    },
+    "stringResources": {
+      "app_name": "My App",
+      "facebook_app_id": "your_facebook_app_id",
+      "facebook_client_token": "your_facebook_client_token",
+      "facebook_app_scheme": "fb_your_facebook_app_id"
     }
   },
   "unityLibrary": {
@@ -83,50 +118,97 @@
     "buildToolsVersion": "34.0.0",
     "minSdkVersion": "24",
     "targetSdkVersion": "34",
-    "dependencies": [
-      { "configuration": "implementation", "notation": "com.example:sdk-core:2.0.0" }
-    ],
-    "permissions": [ "android.permission.INTERNET" ],
-    "metaData": []
-  },
-  "assetPacks": [
-    {
-      "name": "additional_assets",
-      "deliveryType": "install-time",
-      "streamingAssetsPath": "AdditionalAssets"
-    },
-    {
-      "name": "extra_assets",
-      "deliveryType": "fast-follow",
-      "streamingAssetsPath": "ExtraAssets"
-    }
-  ],
-  "fileCopies": {
-    "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
-  },
-  "directoryCopies": {
-    "jniLibs": "launcher/jniLibs"
+    "dependencies": [],
+    "permissions": [],
+    "metaData": [],
+    "applicationAttributes": [],
+    "stringResources": {}
   }
 }
 ```
 
 すべてのフィールドは省略可能です。複数の設定ファイルを配置でき、内容は自動的にマージ・重複排除されます。
 
-- **`launcher`**: Android アプリシェルに適用（`launcher/build.gradle`、`launcher/AndroidManifest.xml`）
-- **`unityLibrary`**: Unity エンジンライブラリに適用（`unityLibrary/build.gradle`、`unityLibrary/AndroidManifest.xml`）
-- **`mavenRepositories`**: ルートの `settings.gradle` に注入
-- **`gradleWrapper`**: キーと値のペアを `gradle-wrapper.properties` に注入
-- **SDK バージョン**（`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`）: マージ時に全設定中の最大数値を採用（`buildToolsVersion` は後勝ち）
-- **`applicationId`**: アプリケーション識別子、`defaultConfig {}` に注入、マージは後勝ち
-- **`versionName`**: バージョン名、`defaultConfig {}` に注入、マージは後勝ち
-- **`signingConfig`**: 署名設定（storeFile/storePassword/keyAlias/keyPassword）、`signingConfigs {}` と `buildTypes.release {}` に注入。storeFile は相対パスと絶対パスに対応
-- **`assetPacks`**: Google Play Asset Delivery 設定。StreamingAssets のサブディレクトリを独立した Gradle asset pack モジュールにマッピングします。各エントリには以下のフィールドが含まれます：
-  - `name`: asset pack モジュール名（Gradle サブプロジェクト名として使用）
-  - `deliveryType`: 配信モード — `install-time`（アプリと一緒に配信）、`fast-follow`（インストール後に自動ダウンロード）、または `on-demand`（リクエスト時にダウンロード）
-  - `streamingAssetsPath`: Unity の StreamingAssets フォルダ以下のサブディレクトリ名。この asset pack にマッピングされます
-  - `assetPacks` にリストされていない StreamingAssets サブディレクトリは元の位置に残ります
-- **`fileCopies`**: キーと値のマッピング（ソースパス → コピー先パス）、Gradle プロジェクトにファイルをコピー。相対パスと絶対パスに対応
-- **`directoryCopies`**: キーと値のマッピング（ソースパス → コピー先パス）、Gradle プロジェクトにディレクトリをコピー。相対パスと絶対パスに対応
+### フィールド説明
+
+#### グローバルフィールド
+
+| フィールド | 型 | マージ戦略 | 説明 |
+|-----------|-----|-----------|------|
+| `providerName` | string | 後勝ち | 設定プロバイダ名、ビルドログでの識別にのみ使用 |
+| `mavenRepositories` | `[{name, url}]` | URL で重複排除 | Maven リポジトリリスト、ルート `settings.gradle` の `dependencyResolutionManagement.repositories` に注入 |
+| `gradleWrapper` | `{key: value}` | キーで上書き | `gradle-wrapper.properties` に注入するキーと値のペア |
+| `gradleProperties` | `{key: value}` | キーで上書き | `gradle.properties` に注入するキーと値のペア |
+| `fileCopies` | `{ソース: コピー先}` | ソースで上書き | ファイルコピーマップ。相対ソースは設定ファイルディレクトリから、相対コピー先は Gradle ルートから解決 |
+| `directoryCopies` | `{ソース: コピー先}` | ソースで上書き | ディレクトリコピーマップ。パス解決は `fileCopies` と同じ |
+| `assetPacksEnabled` | bool | 後勝ち | Google Play Asset Delivery 機能の有効化。デフォルト `false` |
+| `assetPacks` | `[{name, deliveryType, streamingAssetsPath}]` | name で重複排除 | Asset Pack 設定リスト。各パックは独立した Gradle サブプロジェクトになります |
+| `localizedStringResources` | `{locale: {key: value}}` | locale ごとにグループ化、各グループ内でキーごとに後勝ち | ローカライズされた string リソース、launcher の `res/values-<locale>/strings.xml` に注入 |
+
+#### モジュールフィールド（launcher / unityLibrary）
+
+| フィールド | 型 | マージ戦略 | 説明 |
+|-----------|-----|-----------|------|
+| `compileSdkVersion` | string | 最大値 | コンパイル SDK バージョン、`android {}` ブロックに注入 |
+| `buildToolsVersion` | string | 後勝ち | ビルドツールバージョン |
+| `minSdkVersion` | string | 最大値 | 最小 SDK バージョン |
+| `targetSdkVersion` | string | 最大値 | ターゲット SDK バージョン |
+| `applicationId` | string | 後勝ち | アプリケーションパッケージ名（launcher のみ有効） |
+| `versionName` | string | 後勝ち | バージョン名 |
+| `dependencies` | `[{configuration, notation}]` | `configuration:notation` で重複排除 | Gradle 依存関係リスト。`configuration` は `implementation`、`api` など |
+| `permissions` | `[string]` | 名前で重複排除 | AndroidManifest `<uses-permission>` エントリ |
+| `metaData` | `[{name, value}]` | name で重複排除 | AndroidManifest `<application>` 下の `<meta-data>` エントリ |
+| `applicationAttributes` | `[{name, value}]` | 名前で重複排除 | AndroidManifest `<application>` タグの属性（`android:` プレフィックスなし） |
+| `signingConfig` | `{storeFile, storePassword, keyAlias, keyPassword}` | 後勝ち | 署名設定、`signingConfigs.release` と `buildTypes.release` に注入 |
+| `stringResources` | `{key: value}` | キーごとに後勝ち | string リソース、`res/values/strings.xml` に注入 |
+
+## 設定リファレンス
+
+### stringResources よく使う Key
+
+| Key | SDK / サービス | 説明 |
+|-----|---------------|------|
+| `app_name` | Android | アプリケーション表示名（ホーム画面のアイコン名） |
+| `facebook_app_id` | Facebook SDK | Facebook アプリケーション ID |
+| `facebook_client_token` | Facebook SDK | Facebook クライアントトークン |
+| `facebook_app_scheme` | Facebook SDK | Facebook URL Scheme、形式：`fb` + facebook_app_id |
+| `google_app_id` | Google Services | Google アプリケーション ID（形式：`1:数値:android:ハッシュ`） |
+| `default_web_client_id` | Google Sign-In | OAuth 2.0 Web クライアント ID（`.apps.googleusercontent.com` で終わる） |
+| `firebase_database_url` | Firebase | Realtime Database URL |
+| `gcm_defaultSenderId` | Firebase Cloud Messaging | FCM 送信者 ID |
+| `project_id` | Firebase | Firebase プロジェクト ID |
+| `google_api_key` | Google | Google API Key（`AIzaSy` で始まる） |
+| `google_crash_reporting_api_key` | Firebase Crashlytics | Crash Reporting API Key |
+| `google_storage_bucket` | Firebase Storage | Cloud Storage Bucket（`プロジェクトID.appspot.com`） |
+
+> 注：Google/Firebase 関連の key は通常 `google-services.json` の Gradle プラグインによって自動生成されます。Gradle プラグインが使用できない場合のみ `stringResources` で手動注入してください。
+
+### localizedStringResources
+
+ローカライズされた string リソースは `launcher/src/main/res/values-<locale>/strings.xml` に注入されます。Android はデバイスの言語設定に基づいて適切なリソースファイルを自動的に選択し、一致する言語が見つからない場合は `res/values/strings.xml` にフォールバックします。
+
+ほとんどのゲームでは `app_name` のみをローカライズすれば十分です。その他の SDK トークンや ID は言語に依存しないため、`stringResources` に配置してください。
+
+### Asset Pack deliveryType
+
+| 値 | 説明 | サイズ制限 |
+|----|------|-----------|
+| `install-time` | アプリのインストール時に一緒に配信 | パックあたり ≤ 150MB |
+| `fast-follow` | インストール後に自動的にバックグラウンドでダウンロード | パックあたり ≤ 150MB |
+| `on-demand` | アプリからのリクエスト時にダウンロード | パックあたり ≤ 150MB |
+
+### よく使う locale コード
+
+| locale | 言語 | locale | 言語 |
+|--------|------|--------|------|
+| `en` | English | `de` | Deutsch |
+| `zh-rCN` | 简体中文 | `fr` | Français |
+| `zh-rTW` | 繁體中文 | `es` | Español |
+| `ja` | 日本語 | `pt` | Português |
+| `ko` | 한국어 | `ru` | Русский |
+| `th` | ไทย | `ar` | العربية |
+| `vi` | Tiếng Việt | `tr` | Türkçe |
+| `id` | Bahasa Indonesia | | |
 
 ## 依存関係
 

@@ -20,7 +20,7 @@
 
 ## Project Overview
 
-Generic Android build configuration system. Auto-discovers `AndroidBuildConfig.json` files across the project and injects Maven repositories, Gradle dependencies, and AndroidManifest entries during build.
+Generic Android build configuration system. Auto-discovers `AndroidBuildConfig.json` files across the project and injects Maven repositories, Gradle dependencies, AndroidManifest entries, string resources, and localization during build.
 
 Key features:
 
@@ -57,6 +57,32 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
   "gradleWrapper": {
     "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
   },
+  "gradleProperties": {
+    "android.useAndroidX": "true",
+    "org.gradle.jvmargs": "-Xmx4096m"
+  },
+  "fileCopies": {
+    "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
+  },
+  "directoryCopies": {
+    "jniLibs": "launcher/jniLibs"
+  },
+  "assetPacksEnabled": true,
+  "assetPacks": [
+    {
+      "name": "additional_assets",
+      "deliveryType": "install-time",
+      "streamingAssetsPath": "AdditionalAssets"
+    }
+  ],
+  "localizedStringResources": {
+    "zh-rCN": {
+      "app_name": "我的应用"
+    },
+    "ja": {
+      "app_name": "マイアプリ"
+    }
+  },
   "launcher": {
     "compileSdkVersion": "34",
     "buildToolsVersion": "34.0.0",
@@ -71,11 +97,20 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
     "metaData": [
       { "name": "com.example.APP_ID", "value": "your_app_id" }
     ],
+    "applicationAttributes": [
+      { "name": "usesCleartextTraffic", "value": "true" }
+    ],
     "signingConfig": {
       "storeFile": "keystore/release.jks",
       "storePassword": "your_store_password",
       "keyAlias": "release",
       "keyPassword": "your_key_password"
+    },
+    "stringResources": {
+      "app_name": "My App",
+      "facebook_app_id": "your_facebook_app_id",
+      "facebook_client_token": "your_facebook_client_token",
+      "facebook_app_scheme": "fb_your_facebook_app_id"
     }
   },
   "unityLibrary": {
@@ -83,50 +118,97 @@ Place an `AndroidBuildConfig.json` file anywhere in your project (e.g., under `A
     "buildToolsVersion": "34.0.0",
     "minSdkVersion": "24",
     "targetSdkVersion": "34",
-    "dependencies": [
-      { "configuration": "implementation", "notation": "com.example:sdk-core:2.0.0" }
-    ],
-    "permissions": [ "android.permission.INTERNET" ],
-    "metaData": []
-  },
-  "assetPacks": [
-    {
-      "name": "additional_assets",
-      "deliveryType": "install-time",
-      "streamingAssetsPath": "AdditionalAssets"
-    },
-    {
-      "name": "extra_assets",
-      "deliveryType": "fast-follow",
-      "streamingAssetsPath": "ExtraAssets"
-    }
-  ],
-  "fileCopies": {
-    "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
-  },
-  "directoryCopies": {
-    "jniLibs": "launcher/jniLibs"
+    "dependencies": [],
+    "permissions": [],
+    "metaData": [],
+    "applicationAttributes": [],
+    "stringResources": {}
   }
 }
 ```
 
 All fields are optional. You can place multiple config files — contents are automatically merged and deduplicated.
 
-- **`launcher`**: Targets the Android app shell (`launcher/build.gradle`, `launcher/AndroidManifest.xml`)
-- **`unityLibrary`**: Targets the Unity engine library (`unityLibrary/build.gradle`, `unityLibrary/AndroidManifest.xml`)
-- **`mavenRepositories`**: Injected into root `settings.gradle`
-- **`gradleWrapper`**: Key-value pairs injected into `gradle-wrapper.properties`
-- **SDK versions** (`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`): Merged by taking the maximum numeric value across all configs (except `buildToolsVersion` which uses last-writer-wins)
-- **`applicationId`**: Application identifier injected into `defaultConfig {}`, merged by last-writer-wins
-- **`versionName`**: Version name string injected into `defaultConfig {}`, merged by last-writer-wins
-- **`signingConfig`**: Signing configuration (storeFile/storePassword/keyAlias/keyPassword), injected into `signingConfigs {}` and `buildTypes.release {}`. storeFile supports relative and absolute paths
-- **`assetPacks`**: Google Play Asset Delivery configuration. Maps StreamingAssets subdirectories to independent Gradle asset pack modules. Each entry contains:
-  - `name`: Asset pack module name (used as the Gradle sub-project name)
-  - `deliveryType`: Delivery mode — `install-time` (delivered with the app), `fast-follow` (downloaded shortly after install), or `on-demand` (downloaded when requested)
-  - `streamingAssetsPath`: Subdirectory name under Unity's StreamingAssets folder to map into this asset pack
-  - StreamingAssets subdirectories not listed in `assetPacks` remain in their original location
-- **`fileCopies`**: Key-value map (source → destination) for copying files into the Gradle project. Supports relative and absolute paths
-- **`directoryCopies`**: Key-value map (source → destination) for copying directories into the Gradle project. Supports relative and absolute paths
+### Field Descriptions
+
+#### Global Fields
+
+| Field | Type | Merge Strategy | Description |
+|-------|------|----------------|-------------|
+| `providerName` | string | Last-writer-wins | Config provider name, used for logging only |
+| `mavenRepositories` | `[{name, url}]` | Deduplicate by URL | Maven repositories, injected into root `settings.gradle` |
+| `gradleWrapper` | `{key: value}` | Key override | Key-value pairs injected into `gradle-wrapper.properties` |
+| `gradleProperties` | `{key: value}` | Key override | Key-value pairs injected into `gradle.properties` |
+| `fileCopies` | `{source: dest}` | Source override | File copy map. Relative source resolved from config file directory, relative dest from Gradle root |
+| `directoryCopies` | `{source: dest}` | Source override | Directory copy map. Same path resolution as `fileCopies` |
+| `assetPacksEnabled` | bool | Last-writer-wins | Enable Google Play Asset Delivery feature. Default `false` |
+| `assetPacks` | `[{name, deliveryType, streamingAssetsPath}]` | Deduplicate by name | Asset pack configurations. Each pack becomes an independent Gradle sub-project |
+| `localizedStringResources` | `{locale: {key: value}}` | Per-locale, per-key last-writer-wins | Localized string resources, injected into launcher's `res/values-<locale>/strings.xml` |
+
+#### Module Fields (launcher / unityLibrary)
+
+| Field | Type | Merge Strategy | Description |
+|-------|------|----------------|-------------|
+| `compileSdkVersion` | string | Max value | Compile SDK version, injected into `android {}` block |
+| `buildToolsVersion` | string | Last-writer-wins | Build tools version |
+| `minSdkVersion` | string | Max value | Minimum SDK version |
+| `targetSdkVersion` | string | Max value | Target SDK version |
+| `applicationId` | string | Last-writer-wins | Application package name (launcher only) |
+| `versionName` | string | Last-writer-wins | Version name string |
+| `dependencies` | `[{configuration, notation}]` | Deduplicate by `configuration:notation` | Gradle dependencies. `configuration` can be `implementation`, `api`, etc. |
+| `permissions` | `[string]` | Deduplicate by name | AndroidManifest `<uses-permission>` entries |
+| `metaData` | `[{name, value}]` | Deduplicate by name | AndroidManifest `<meta-data>` entries under `<application>` |
+| `applicationAttributes` | `[{name, value}]` | Deduplicate by name | Attributes on the `<application>` tag (without `android:` prefix) |
+| `signingConfig` | `{storeFile, storePassword, keyAlias, keyPassword}` | Last-writer-wins | Signing config for `signingConfigs.release` and `buildTypes.release` |
+| `stringResources` | `{key: value}` | Per-key last-writer-wins | String resources injected into `res/values/strings.xml` |
+
+## Configuration Reference
+
+### stringResources Common Keys
+
+| Key | SDK / Service | Description |
+|-----|---------------|-------------|
+| `app_name` | Android | Application display name (home screen icon label) |
+| `facebook_app_id` | Facebook SDK | Facebook Application ID |
+| `facebook_client_token` | Facebook SDK | Facebook Client Token |
+| `facebook_app_scheme` | Facebook SDK | Facebook URL Scheme, format: `fb` + facebook_app_id |
+| `google_app_id` | Google Services | Google Application ID (format: `1:number:android:hash`) |
+| `default_web_client_id` | Google Sign-In | OAuth 2.0 Web Client ID (ends with `.apps.googleusercontent.com`) |
+| `firebase_database_url` | Firebase | Realtime Database URL |
+| `gcm_defaultSenderId` | Firebase Cloud Messaging | FCM Sender ID |
+| `project_id` | Firebase | Firebase Project ID |
+| `google_api_key` | Google | Google API Key (starts with `AIzaSy`) |
+| `google_crash_reporting_api_key` | Firebase Crashlytics | Crash Reporting API Key |
+| `google_storage_bucket` | Firebase Storage | Cloud Storage Bucket (`projectId.appspot.com`) |
+
+> Note: Google/Firebase keys are typically auto-generated by the `google-services.json` Gradle plugin. Only use `stringResources` for manual injection when the plugin cannot be used.
+
+### localizedStringResources
+
+Localized string resources are injected into `launcher/src/main/res/values-<locale>/strings.xml`. Android automatically selects the appropriate resource file based on device language, falling back to `res/values/strings.xml` when no match is found.
+
+Most games only need to localize `app_name`. Other SDK tokens/IDs are language-independent and should be placed in `stringResources`.
+
+### Asset Pack deliveryType
+
+| Value | Description | Size Limit |
+|-------|-------------|------------|
+| `install-time` | Delivered with the app installation | ≤ 150MB per pack |
+| `fast-follow` | Downloaded automatically shortly after install | ≤ 150MB per pack |
+| `on-demand` | Downloaded only when requested by the app | ≤ 150MB per pack |
+
+### Common Locale Codes
+
+| Locale | Language | Locale | Language |
+|--------|----------|--------|----------|
+| `en` | English | `de` | Deutsch |
+| `zh-rCN` | 简体中文 (Simplified Chinese) | `fr` | Français |
+| `zh-rTW` | 繁體中文 (Traditional Chinese) | `es` | Español |
+| `ja` | 日本語 (Japanese) | `pt` | Português |
+| `ko` | 한국어 (Korean) | `ru` | Русский |
+| `th` | ไทย (Thai) | `ar` | العربية |
+| `vi` | Tiếng Việt (Vietnamese) | `tr` | Türkçe |
+| `id` | Bahasa Indonesia | | |
 
 ## Dependencies
 

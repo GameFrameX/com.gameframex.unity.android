@@ -20,7 +20,7 @@
 
 ## 項目簡介
 
-通用的 Android 構建自動設定系統。透過 JSON 資料檔案驅動，自動發現專案中所有 `AndroidBuildConfig.json` 並在構建時注入 Maven 倉庫、Gradle 依賴、AndroidManifest 設定。
+通用的 Android 構建自動設定系統。透過 JSON 資料檔案驅動，自動發現專案中所有 `AndroidBuildConfig.json` 並在構建時注入 Maven 倉庫、Gradle 依賴、AndroidManifest 設定、string 資源和本地化配置。
 
 核心特性：
 
@@ -57,6 +57,32 @@
   "gradleWrapper": {
     "distributionUrl": "https\\://services.gradle.org/distributions/gradle-8.4-bin.zip"
   },
+  "gradleProperties": {
+    "android.useAndroidX": "true",
+    "org.gradle.jvmargs": "-Xmx4096m"
+  },
+  "fileCopies": {
+    "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
+  },
+  "directoryCopies": {
+    "jniLibs": "launcher/jniLibs"
+  },
+  "assetPacksEnabled": true,
+  "assetPacks": [
+    {
+      "name": "additional_assets",
+      "deliveryType": "install-time",
+      "streamingAssetsPath": "AdditionalAssets"
+    }
+  ],
+  "localizedStringResources": {
+    "zh-rCN": {
+      "app_name": "我的应用"
+    },
+    "ja": {
+      "app_name": "マイアプリ"
+    }
+  },
   "launcher": {
     "compileSdkVersion": "34",
     "buildToolsVersion": "34.0.0",
@@ -71,11 +97,20 @@
     "metaData": [
       { "name": "com.example.APP_ID", "value": "your_app_id" }
     ],
+    "applicationAttributes": [
+      { "name": "usesCleartextTraffic", "value": "true" }
+    ],
     "signingConfig": {
       "storeFile": "keystore/release.jks",
       "storePassword": "your_store_password",
       "keyAlias": "release",
       "keyPassword": "your_key_password"
+    },
+    "stringResources": {
+      "app_name": "My App",
+      "facebook_app_id": "your_facebook_app_id",
+      "facebook_client_token": "your_facebook_client_token",
+      "facebook_app_scheme": "fb_your_facebook_app_id"
     }
   },
   "unityLibrary": {
@@ -83,50 +118,97 @@
     "buildToolsVersion": "34.0.0",
     "minSdkVersion": "24",
     "targetSdkVersion": "34",
-    "dependencies": [
-      { "configuration": "implementation", "notation": "com.example:sdk-core:2.0.0" }
-    ],
-    "permissions": [ "android.permission.INTERNET" ],
-    "metaData": []
-  },
-  "assetPacks": [
-    {
-      "name": "additional_assets",
-      "deliveryType": "install-time",
-      "streamingAssetsPath": "AdditionalAssets"
-    },
-    {
-      "name": "extra_assets",
-      "deliveryType": "fast-follow",
-      "streamingAssetsPath": "ExtraAssets"
-    }
-  ],
-  "fileCopies": {
-    "libs/your-sdk.aar": "launcher/libs/your-sdk.aar"
-  },
-  "directoryCopies": {
-    "jniLibs": "launcher/jniLibs"
+    "dependencies": [],
+    "permissions": [],
+    "metaData": [],
+    "applicationAttributes": [],
+    "stringResources": {}
   }
 }
 ```
 
 所有欄位均為可選。專案中可放置多個設定檔，內容自動合併去重。
 
-- **`launcher`**：作用於 Android 應用殼（`launcher/build.gradle`、`launcher/AndroidManifest.xml`）
-- **`unityLibrary`**：作用於 Unity 引擎庫（`unityLibrary/build.gradle`、`unityLibrary/AndroidManifest.xml`）
-- **`mavenRepositories`**：注入到根 `settings.gradle`
-- **`gradleWrapper`**：鍵值對注入到 `gradle-wrapper.properties`
-- **SDK 版本**（`compileSdkVersion`/`buildToolsVersion`/`minSdkVersion`/`targetSdkVersion`）：合併時取所有設定中的最大數值（`buildToolsVersion` 為後寫覆蓋）
-- **`applicationId`**：應用標識符，注入到 `defaultConfig {}`，合併策略為後寫覆蓋
-- **`versionName`**：版本名稱，注入到 `defaultConfig {}`，合併策略為後寫覆蓋
-- **`signingConfig`**：簽名配置（storeFile/storePassword/keyAlias/keyPassword），注入到 `signingConfigs {}` 和 `buildTypes.release {}`。storeFile 支援相對路徑和絕對路徑
-- **`assetPacks`**：Google Play Asset Delivery 配置。將 StreamingAssets 子目錄映射為獨立的 Gradle asset pack 模組。每個條目包含：
-  - `name`：asset pack 模組名稱（作為 Gradle 子專案名稱）
-  - `deliveryType`：分發模式 — `install-time`（隨應用一起分發）、`fast-follow`（安裝後自動下載）或 `on-demand`（按需下載）
-  - `streamingAssetsPath`：Unity StreamingAssets 資料夾下的子目錄名稱，映射到該 asset pack 中
-  - 未在 `assetPacks` 中列出的 StreamingAssets 子目錄將保留在原始位置
-- **`fileCopies`**：鍵值對映射（源路徑 → 目標路徑），用於複製檔案到 Gradle 專案。支援相對路徑和絕對路徑
-- **`directoryCopies`**：鍵值對映射（源路徑 → 目標路徑），用於複製目錄到 Gradle 專案。支援相對路徑和絕對路徑
+### 欄位說明
+
+#### 全域欄位
+
+| 欄位 | 類型 | 合併策略 | 說明 |
+|------|------|---------|------|
+| `providerName` | string | 後寫覆蓋 | 配置提供者名稱，僅用於構建日誌標識 |
+| `mavenRepositories` | `[{name, url}]` | 按 URL 去重 | Maven 倉庫列表，注入到根 `settings.gradle` 的 `dependencyResolutionManagement.repositories` |
+| `gradleWrapper` | `{key: value}` | 按 key 覆蓋 | 鍵值對注入到 `gradle-wrapper.properties` |
+| `gradleProperties` | `{key: value}` | 按 key 覆蓋 | 鍵值對注入到 `gradle.properties` |
+| `fileCopies` | `{源路徑: 目標路徑}` | 按 source 覆蓋 | 檔案複製映射。相對源路徑基於配置檔案目錄解析，相對目標路徑基於 Gradle 根目錄解析 |
+| `directoryCopies` | `{源路徑: 目標路徑}` | 按 source 覆蓋 | 目錄複製映射，路徑解析同 `fileCopies` |
+| `assetPacksEnabled` | bool | 後寫覆蓋 | 是否啟用 Google Play Asset Delivery 功能，預設 `false` |
+| `assetPacks` | `[{name, deliveryType, streamingAssetsPath}]` | 按 name 去重 | Asset Pack 配置列表，每個 pack 對應一個獨立的 Gradle 子專案 |
+| `localizedStringResources` | `{locale: {key: value}}` | 按 locale 分組，每組內按 key 後寫覆蓋 | 本地化 string 資源，注入到 launcher 的 `res/values-<locale>/strings.xml` |
+
+#### 模組欄位（launcher / unityLibrary）
+
+| 欄位 | 類型 | 合併策略 | 說明 |
+|------|------|---------|------|
+| `compileSdkVersion` | string | 取最大值 | 編譯 SDK 版本，注入到 `android {}` 區塊 |
+| `buildToolsVersion` | string | 後寫覆蓋 | 建構工具版本 |
+| `minSdkVersion` | string | 取最大值 | 最低 SDK 版本 |
+| `targetSdkVersion` | string | 取最大值 | 目標 SDK 版本 |
+| `applicationId` | string | 後寫覆蓋 | 應用程式包名（僅 launcher 有效） |
+| `versionName` | string | 後寫覆蓋 | 版本名稱 |
+| `dependencies` | `[{configuration, notation}]` | 按 `configuration:notation` 去重 | Gradle 依賴列表。`configuration` 可為 `implementation`、`api` 等 |
+| `permissions` | `[string]` | 按名稱去重 | AndroidManifest `<uses-permission>` 權限列表 |
+| `metaData` | `[{name, value}]` | 按 name 去重 | AndroidManifest `<application>` 下的 `<meta-data>` 條目 |
+| `applicationAttributes` | `[{name, value}]` | 按名稱去重 | AndroidManifest `<application>` 標籤上的屬性（不含 `android:` 前綴） |
+| `signingConfig` | `{storeFile, storePassword, keyAlias, keyPassword}` | 後寫覆蓋 | 簽名配置，注入到 `signingConfigs.release` 和 `buildTypes.release` |
+| `stringResources` | `{key: value}` | 按 key 後寫覆蓋 | string 資源，注入到 `res/values/strings.xml` |
+
+## 配置參考
+
+### stringResources 常用 Key
+
+| Key | 所屬 SDK / 服務 | 說明 |
+|-----|----------------|------|
+| `app_name` | Android | 應用顯示名稱（桌面圖示名稱） |
+| `facebook_app_id` | Facebook SDK | Facebook 應用 ID |
+| `facebook_client_token` | Facebook SDK | Facebook 客戶端令牌 |
+| `facebook_app_scheme` | Facebook SDK | Facebook URL Scheme，格式：`fb` + facebook_app_id |
+| `google_app_id` | Google Services | Google 應用 ID（格式：`1:數字:android:哈希`） |
+| `default_web_client_id` | Google Sign-In | OAuth 2.0 Web 客戶端 ID（以 `.apps.googleusercontent.com` 結尾） |
+| `firebase_database_url` | Firebase | Realtime Database URL |
+| `gcm_defaultSenderId` | Firebase Cloud Messaging | FCM 發送者 ID |
+| `project_id` | Firebase | Firebase 專案 ID |
+| `google_api_key` | Google | Google API Key（以 `AIzaSy` 開頭） |
+| `google_crash_reporting_api_key` | Firebase Crashlytics | Crash Reporting API Key |
+| `google_storage_bucket` | Firebase Storage | Cloud Storage Bucket（`專案ID.appspot.com`） |
+
+> 註：Google/Firebase 相關的 key 通常由 `google-services.json` 的 Gradle 外掛自動產生。僅在無法使用 Gradle 外掛時才需透過 `stringResources` 手動注入。
+
+### localizedStringResources
+
+本地化 string 資源注入到 `launcher/src/main/res/values-<locale>/strings.xml`。Android 會根據裝置語言自動選擇對應的資源檔案，找不到匹配語言時回退到 `res/values/strings.xml`。
+
+大多數遊戲只需要本地化 `app_name`，其餘 SDK token/ID 在各語言下相同，放在 `stringResources` 中即可。
+
+### Asset Pack deliveryType
+
+| 值 | 說明 | 大小限制 |
+|----|------|---------|
+| `install-time` | 隨應用安裝時一起下載 | 單個 pack ≤ 150MB |
+| `fast-follow` | 安裝後自動在背景下載 | 單個 pack ≤ 150MB |
+| `on-demand` | 應用按需請求下載 | 單個 pack ≤ 150MB |
+
+### 常用 locale 編碼
+
+| locale | 語言 | locale | 語言 |
+|--------|------|--------|------|
+| `en` | English | `de` | Deutsch |
+| `zh-rCN` | 简体中文 | `fr` | Français |
+| `zh-rTW` | 繁體中文 | `es` | Español |
+| `ja` | 日本語 | `pt` | Português |
+| `ko` | 한국어 | `ru` | Русский |
+| `th` | ไทย | `ar` | العربية |
+| `vi` | Tiếng Việt | `tr` | Türkçe |
+| `id` | Bahasa Indonesia | | |
 
 ## 依賴
 
