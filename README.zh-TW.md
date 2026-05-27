@@ -34,15 +34,26 @@
 
 ### 安裝
 
-在專案的 `Packages/manifest.json` 中新增依賴：
+編輯 Unity 專案的 `Packages/manifest.json`，添加 `scopedRegistries` 部分：
 
 ```json
 {
+  "scopedRegistries": [
+    {
+      "name": "GameFrameX",
+      "url": "https://gameframex.upm.alianblank.uk",
+      "scopes": [
+        "com.gameframex"
+      ]
+    }
+  ],
   "dependencies": {
-    "com.gameframex.unity.android": "https://github.com/gameframex/com.gameframex.unity.android.git"
+    "com.gameframex.unity.android": "1.0.0"
   }
 }
 ```
+
+`scopes` 控制哪些套件透過此註冊表解析。只有以 `com.gameframex` 開頭的套件才會從這個註冊表取得。
 
 ### 使用範例
 

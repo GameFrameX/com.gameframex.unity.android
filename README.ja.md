@@ -34,15 +34,26 @@
 
 ### インストール
 
-プロジェクトの `Packages/manifest.json` に追加：
+Unity プロジェクトの `Packages/manifest.json` を編集し、`scopedRegistries` セクションを追加してください：
 
 ```json
 {
+  "scopedRegistries": [
+    {
+      "name": "GameFrameX",
+      "url": "https://gameframex.upm.alianblank.uk",
+      "scopes": [
+        "com.gameframex"
+      ]
+    }
+  ],
   "dependencies": {
-    "com.gameframex.unity.android": "https://github.com/gameframex/com.gameframex.unity.android.git"
+    "com.gameframex.unity.android": "1.0.0"
   }
 }
 ```
+
+`scopes` は、どのパッケージをこのレジストリから解決するかを制御します。`com.gameframex` で始まるパッケージのみがこのレジストリから取得されます。
 
 ### 使用例
 

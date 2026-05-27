@@ -34,15 +34,26 @@
 
 ### 安装
 
-在项目的 `Packages/manifest.json` 中添加依赖：
+编辑 Unity 项目的 `Packages/manifest.json`，添加 `scopedRegistries` 部分：
 
 ```json
 {
+  "scopedRegistries": [
+    {
+      "name": "GameFrameX",
+      "url": "https://gameframex.upm.alianblank.uk",
+      "scopes": [
+        "com.gameframex"
+      ]
+    }
+  ],
   "dependencies": {
-    "com.gameframex.unity.android": "https://github.com/gameframex/com.gameframex.unity.android.git"
+    "com.gameframex.unity.android": "1.0.0"
   }
 }
 ```
+
+`scopes` 控制哪些包通过此注册表解析。只有以 `com.gameframex` 开头的包才会从这个注册表获取。
 
 ### 使用示例
 

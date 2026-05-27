@@ -34,15 +34,26 @@ Key features:
 
 ### Installation
 
-Add the package to your project's `Packages/manifest.json`:
+Edit your Unity project's `Packages/manifest.json` and add the `scopedRegistries` section:
 
 ```json
 {
+  "scopedRegistries": [
+    {
+      "name": "GameFrameX",
+      "url": "https://gameframex.upm.alianblank.uk",
+      "scopes": [
+        "com.gameframex"
+      ]
+    }
+  ],
   "dependencies": {
-    "com.gameframex.unity.android": "https://github.com/gameframex/com.gameframex.unity.android.git"
+    "com.gameframex.unity.android": "1.0.0"
   }
 }
 ```
+
+`scopes` controls which packages are resolved through this registry. Only packages whose names start with `com.gameframex` will be fetched from it.
 
 ### Usage Examples
 
@@ -267,3 +278,5 @@ See [CHANGELOG.md](CHANGELOG.md) for details.
 ## License
 
 Licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). See [LICENSE.md](LICENSE.md) for details.
+
+GameFrameX and its derivative projects' copyright, trademarks, patents, and other related rights are protected by applicable laws and regulations. This project must not be used for any activities prohibited by laws and regulations, including endangering national security, disrupting social order, or infringing upon others' legitimate rights and interests.
